@@ -4,7 +4,9 @@
 #include <QMainWindow>
 #include <QDateTime>
 #include <QMessageBox>
+#include <QAbstractAnimation>
 #include <QKeyEvent>
+#include <QScrollBar>
 
 namespace Ui {
 class MainWindow;

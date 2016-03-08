@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "connectdialog.h"
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -17,6 +18,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::OnSendClicked()
 {
+    QScrollBar *sb = ui->textWindow->verticalScrollBar();
     QString msgText = ui->sendMessageContent->toPlainText();
     QTime time(QTime::currentTime());
 
@@ -27,15 +29,18 @@ void MainWindow::OnSendClicked()
 
     // time format
     QString timeFormatString = "[" + time.toString() + "]";
+    QString divFormat = "<div style = \"background-color: #0078EE;color: white;\">";
+   // QString divFormat2 = "<div style = \"background-color: #0078EE;color: white;text-align:right\">";
 
     // inserts html code formatting
-    ui->textWindow->insertHtml("<div>" + timeFormatString + " " + msgText + "</div>");
-
-    // inserts new line
-    ui->textWindow->append("");
+    ui->textWindow->insertHtml(divFormat + timeFormatString + "<div></div>" +
+                               msgText + "</div>" + "<div></div>");
 
     // clear text after you send
     ui->sendMessageContent->clear();
+
+    // always scroll to bottom after sending
+    sb->setValue(sb->maximum());
 
     // focus user back to text field
     ui->sendMessageContent->setFocus();

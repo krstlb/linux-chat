@@ -140,6 +140,9 @@ p, li { white-space: pre-wrap; }
         <pointsize>16</pointsize>
        </font>
       </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
      </widget>
     </item>
    </layout>

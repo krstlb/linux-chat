@@ -14,12 +14,15 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    networking.cpp
+    networking.cpp \
+    connectdialog.cpp
 
 HEADERS  += mainwindow.h \
-    networking.h
+    networking.h \
+    connectdialog.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    connectdialog.ui
 
 DISTFILES +=
 
