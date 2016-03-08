@@ -2,6 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QDateTime>
+#include <QMessageBox>
+#include <QKeyEvent>
 
 namespace Ui {
 class MainWindow;
@@ -14,6 +17,9 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+private slots:
+    void OnSendClicked();
 
 private:
     Ui::MainWindow *ui;
