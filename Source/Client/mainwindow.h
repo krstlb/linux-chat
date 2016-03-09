@@ -7,6 +7,7 @@
 #include <QAbstractAnimation>
 #include <QKeyEvent>
 #include <QScrollBar>
+#include <QDialog>
 
 namespace Ui {
 class MainWindow;
@@ -22,6 +23,7 @@ public:
 
 private slots:
     void OnSendClicked();
+    void onConnectClicked();
 
 private:
     Ui::MainWindow *ui;

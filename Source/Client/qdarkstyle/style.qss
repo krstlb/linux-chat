@@ -26,7 +26,7 @@ QProgressBar:horizontal {
     border: 1px solid #3A3939;
     text-align: center;
     padding: 1px;
-    background: #201F1F;
+    background: #343C47;
 }
 QProgressBar::chunk:horizontal {
     background-color: qlineargradient(spread:reflect, x1:1, y1:0.545, x2:1, y2:0, stop:0 rgba(28, 66, 111, 255), stop:1 rgba(37, 87, 146, 255));
@@ -44,7 +44,7 @@ QToolTip
 QWidget
 {
     color: silver;
-    background-color: #302F2F;
+    background-color: #272B36;
     selection-background-color:#3d8ec9;
     selection-color: black;
     background-clip: border;
@@ -108,7 +108,7 @@ QCheckBox::indicator:checked:hover,
 QGroupBox::indicator:checked,
 QGroupBox::indicator:checked:hover
 {
-    image: url(:/qss_icons/rc/checkbox_checked.png);
+    image: url(:/qss_icons/rc/checkbox_checked_focus.png);
 }
 
 QCheckBox::indicator:checked:focus,
@@ -335,7 +335,6 @@ QAbstractItemView
 
 QWidget:focus, QMenuBar:focus
 {
-    border: 1px solid #78879b;
 }
 
 QTabWidget:focus, QCheckBox:focus, QRadioButton:focus, QSlider:focus
@@ -345,7 +344,7 @@ QTabWidget:focus, QCheckBox:focus, QRadioButton:focus, QSlider:focus
 
 QLineEdit
 {
-    background-color: #201F1F;
+    background-color: #343C47;
     padding: 2px;
     border-style: solid;
     border: 1px solid #3A3939;
@@ -509,14 +508,14 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
 
 QTextEdit
 {
-    background-color: #201F1F;
+    background-color: #343C47;
     color: silver;
     border: 1px solid #3A3939;
 }
 
 QPlainTextEdit
 {
-    background-color: #201F1F;;
+    background-color: #343C47;;
     color: silver;
     border-radius: 2px;
     border: 1px solid #3A3939;
@@ -587,8 +586,8 @@ QStackedWidget
 
 QToolBar {
     border: 1px transparent #393838;
-    background: 1px solid #302F2F;
-    font-weight: bold;
+    background: 1px solid #009E78;
+    font: bold 16px;
 }
 
 QToolBar::handle:horizontal {
@@ -641,7 +640,7 @@ QPushButton:focus {
 QComboBox
 {
     selection-background-color: #3d8ec9;
-    background-color: #201F1F;
+    background-color: #343C47;
     border-style: solid;
     border: 1px solid #3A3939;
     border-radius: 2px;
@@ -670,7 +669,7 @@ QComboBox:on
 
 QComboBox QAbstractItemView
 {
-    background-color: #201F1F;
+    background-color: #343C47;
     border-radius: 2px;
     border: 1px solid #444;
     selection-background-color: #3d8ec9;
@@ -709,7 +708,7 @@ QAbstractSpinBox {
     padding-top: 2px;
     padding-bottom: 2px;
     border: 1px solid #3A3939;
-    background-color: #201F1F;
+    background-color: #343C47;
     color: silver;
     border-radius: 2px;
     min-width: 75px;
@@ -808,7 +807,7 @@ QTabBar::tab:top {
 QTabBar::tab:top:!selected
 {
     color: #b1b1b1;
-    background-color: #201F1F;
+    background-color: #343C47;
     border: 1px transparent #4A4949;
     border-bottom: 1px transparent #4A4949;
     border-top-left-radius: 0px;
@@ -833,7 +832,7 @@ QTabBar::tab:bottom {
 QTabBar::tab:bottom:!selected
 {
     color: #b1b1b1;
-    background-color: #201F1F;
+    background-color: #343C47;
     border: 1px transparent #4A4949;
     border-top: 1px transparent #4A4949;
     border-bottom-left-radius: 0px;
@@ -858,7 +857,7 @@ QTabBar::tab:left {
 QTabBar::tab:left:!selected
 {
     color: #b1b1b1;
-    background-color: #201F1F;
+    background-color: #343C47;
     border: 1px transparent #4A4949;
     border-right: 1px transparent #4A4949;
     border-top-right-radius: 0px;
@@ -884,7 +883,7 @@ QTabBar::tab:right {
 QTabBar::tab:right:!selected
 {
     color: #b1b1b1;
-    background-color: #201F1F;
+    background-color: #343C47;
     border: 1px transparent #4A4949;
     border-right: 1px transparent #4A4949;
     border-top-left-radius: 0px;
@@ -936,7 +935,7 @@ QDockWidget::close-button:pressed, QDockWidget::float-button:pressed {
 QTreeView, QListView
 {
     border: 1px solid #444;
-    background-color: #201F1F;
+    background-color: #343C47;
 }
 
 QTreeView:branch:selected, QTreeView:branch:hover
@@ -990,7 +989,7 @@ QListView::item:selected:hover, QListView::item:selected:hover, QTreeView::item:
 QSlider::groove:horizontal {
     border: 1px solid #3A3939;
     height: 8px;
-    background: #201F1F;
+    background: #343C47;
     margin: 2px 0;
     border-radius: 2px;
 }
@@ -1008,7 +1007,7 @@ QSlider::handle:horizontal {
 QSlider::groove:vertical {
     border: 1px solid #3A3939;
     width: 8px;
-    background: #201F1F;
+    background: #343C47;
     margin: 0 0px;
     border-radius: 2px;
 }
@@ -1089,7 +1088,7 @@ QTableView
 {
     border: 1px solid #444;
     gridline-color: #6c6c6c;
-    background-color: #201F1F;
+    background-color: #343C47;
 }
 
 

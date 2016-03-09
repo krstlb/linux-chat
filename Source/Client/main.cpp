@@ -1,4 +1,6 @@
 #include "mainwindow.h"
+#include "stdio.h"
+#include <QLabel>
 #include <QApplication>
 #include <QFile>
 
@@ -16,3 +18,9 @@ int main(int argc, char *argv[])
 
     return a.exec();
 }
+
+/* QTextStream& qStdOut()
+{
+    QTextStream ts( stdout );
+    return ts;
+} */

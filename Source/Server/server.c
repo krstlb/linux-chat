@@ -19,7 +19,7 @@ static void SystemFatal(const char* );
 int main (int argc, char **argv)
 {
 	int i, maxi, nready, bytes_to_read, arg;
-	int listen_sd, new_sd, sockfd, client_len, port, maxfd, client[FD_SETSIZE];
+	int listen_sd, new_sd, sockfd, port, maxfd, client[FD_SETSIZE];
 	struct sockaddr_in server, client_addr;
 	char *bp, buf[BUFLEN];
    	ssize_t n;
@@ -74,63 +74,59 @@ int main (int argc, char **argv)
    		rset = allset;               // structure assignment
 		nready = select(maxfd + 1, &rset, NULL, NULL, NULL);
 
-      		if (FD_ISSET(listen_sd, &rset)) // new client connection
-      		{
-			client_len = sizeof(client_addr);
-			if ((new_sd = accept(listen_sd, (struct sockaddr *) &client_addr, &client_len)) == -1)
-				SystemFatal("accept error");
+      		if (FD_ISSET(listen_sd, &rset)) { // new connection
+   				socklen_t client_len = sizeof(client);
+
+				if ((new_sd = accept(listen_sd, (struct sockaddr *) &client_addr, &client_len)) == -1)
+					SystemFatal("accept error");
 			
-                        printf(" Remote Address:  %s\n", inet_ntoa(client_addr.sin_addr));
+                printf(" Remote Address:  %s\n", inet_ntoa(client_addr.sin_addr));
 
-                        for (i = 0; i < FD_SETSIZE; i++)
-			if (client[i] < 0)
-            		{
-				client[i] = new_sd;	// save descriptor
-				break;
+                for (i = 0; i < FD_SETSIZE; i++)
+					if (client[i] < 0) {
+						client[i] = new_sd;	// save descriptor
+						break;
             		}
-			if (i == FD_SETSIZE)
-         		{
-				printf ("Too many clients\n");
-            			exit(1);
-    			}
 
-			FD_SET (new_sd, &allset);     // add new descriptor to set
-			if (new_sd > maxfd)
-				maxfd = new_sd;	// for select
+				if (i == FD_SETSIZE) {
+					SystemFatal ("Too many clients");
+	    		}
 
-			if (i > maxi)
-				maxi = i;	// new max index in client[] array
+				FD_SET (new_sd, &allset);     // add new descriptor to set
+				
+				if (new_sd > maxfd)
+					maxfd = new_sd;	// for select
 
-			if (--nready <= 0)
-				continue;	// no more readable descriptors
+				if (i > maxi)
+					maxi = i;	// new max index in client[] array
+
+				if (--nready <= 0)
+					continue;	// no more readable descriptors
      		 }
 
-		for (i = 0; i <= maxi; i++)	// check all clients for data
-     		{
+				for (i = 0; i <= maxi; i++)	{
 			if ((sockfd = client[i]) < 0)
 				continue;
 
-			if (FD_ISSET(sockfd, &rset))
-         		{
+			if (FD_ISSET(sockfd, &rset)) {
          		bp = buf;
 				bytes_to_read = BUFLEN;
-				while ((n = read(sockfd, bp, bytes_to_read)) > 0)
-				{
+				while ((n = read(sockfd, bp, bytes_to_read)) > 0) {
 					bp += n;
 					bytes_to_read -= n;
 				}
+
 				write(sockfd, buf, BUFLEN);   // echo to client
 				
-				if (n == 0) // connection closed by client
-            			{
+				if (n == 0) {				// connection closed by client
 					printf(" Remote Address:  %s closed connection\n", inet_ntoa(client_addr.sin_addr));
 					close(sockfd);
 					FD_CLR(sockfd, &allset);
-               				client[i] = -1;
-            			}
+               		client[i] = -1;
+            	}
 									            				
 				if (--nready <= 0)
-            				break;        // no more readable descriptors
+            		break;        			// no more readable descriptors
 			}
      		 }
    	}

@@ -2,21 +2,18 @@
 #define CONNECTDIALOG_H
 
 #include <QDialog>
-
-namespace Ui {
-class ConnectDialog;
-}
+#include <QLineEdit>
 
 class ConnectDialog : public QDialog
 {
     Q_OBJECT
-
 public:
     explicit ConnectDialog(QWidget *parent = 0);
-    ~ConnectDialog();
+
+    QString searchString() const;
 
 private:
-    Ui::ConnectDialog *ui;
+    QLineEdit *m_lineEdit;
 };
 
 #endif // CONNECTDIALOG_H

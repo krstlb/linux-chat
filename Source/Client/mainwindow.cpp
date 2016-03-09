@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-#include "connectdialog.h"
+#include "dialog.h"
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     connect(ui->sendDataButton, SIGNAL (clicked()),this, SLOT (OnSendClicked()));
+    connect(ui->actionConnect, SIGNAL (triggered()),this, SLOT (onConnectClicked()));
 }
 
 MainWindow::~MainWindow()
@@ -29,12 +30,11 @@ void MainWindow::OnSendClicked()
 
     // time format
     QString timeFormatString = "[" + time.toString() + "]";
-    QString divFormat = "<div style = \"background-color: #0078EE;color: white;\">";
-   // QString divFormat2 = "<div style = \"background-color: #0078EE;color: white;text-align:right\">";
+    QString divFormat = "<div style = \"border: 5px solid white;color: white;\">";
 
     // inserts html code formatting
-    ui->textWindow->insertHtml(divFormat + timeFormatString + "<div></div>" +
-                               msgText + "</div>" + "<div></div>");
+    ui->textWindow->insertHtml(divFormat + timeFormatString + "<div style = \"background-color: rgba(0,0,0,0.5);\"></div>" +
+                               msgText + "<div></div>" + "</div>");
 
     // clear text after you send
     ui->sendMessageContent->clear();
@@ -45,5 +45,14 @@ void MainWindow::OnSendClicked()
     // focus user back to text field
     ui->sendMessageContent->setFocus();
 
+}
+
+void MainWindow::onConnectClicked()
+{
+
+   Dialog *dialog = new Dialog(this);
+   dialog->show();
+
+  //  QMessageBox::information(this, tr("Hello"), tr("Enter a nickname."));
 }
 
