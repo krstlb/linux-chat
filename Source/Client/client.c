@@ -63,29 +63,34 @@ int main (int argc, char **argv)
     pptr = hp->h_addr_list;
     printf("\t\tIP Address: %s\n", inet_ntop(hp->h_addrtype, *pptr, str, sizeof(str)));
 
-    // Endlessly send message until disconnect
-    while (1) {
-        printf("Transmit:\n");
-
-        // Get user's text
-        fgets (sbuf, BUFLEN, stdin);
-        // Transmit data through the socket
-        send (sd, sbuf, BUFLEN, 0);
-
-        printf("Receive:\n");
-        bp = rbuf;
-        bytes_to_read = BUFLEN;
-
-        // Client makes repeated calls to recv until no more data is expected to arrive
-        n = 0;
-        while ((n = recv (sd, bp, bytes_to_read, 0)) < BUFLEN)
-        {
-            bp += n;
-            bytes_to_read -= n;
+    // Send
+    if (fork() == 0) {
+        while (1) {
+            // Get user's text
+            fgets (sbuf, BUFLEN, stdin);
+            // Transmit data through the socket
+            send (sd, sbuf, BUFLEN, 0);
         }
-        printf ("%s\n", rbuf);
+    } else { // Receive
+        while (1) {
+            bp = rbuf;
+            bytes_to_read = BUFLEN;
 
-        // TODO: action to disconnect
+            // Client makes repeated calls to recv until no more data is expected to arrive
+            n = 0;
+            while ((n = recv (sd, bp, bytes_to_read, 0)) < BUFLEN)
+            {
+                bp += n;
+                bytes_to_read -= n;
+            }
+            printf("Received:\n");
+            printf ("%s\n", rbuf);
+
+            // TODO: action to disconnect
+            if (sbuf[0] == 'q') {
+                break;
+            }
+        }
     }
 
     // Flush stdout and close socket
