@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "dialog.h"
 #include "ui_mainwindow.h"
+#include "networking.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -23,10 +24,15 @@ void MainWindow::OnSendClicked()
     QString msgText = ui->sendMessageContent->toPlainText();
     QTime time(QTime::currentTime());
 
-    // std::string msg (text.toStdString());
+    // convert qstring message into char * message for sending
+    std::string msg (msgText.toStdString());
+    char* message = new char [msg.size()+1];
+    strcpy(message, msg.c_str());
 
-    // send message to server
-    // sendDataToServer(msg.c_str());
+
+    // Send message
+    std::thread sendThread(sendDataToServer, std::ref(message));
+    sendThread.join();
 
     // time format
     QString timeFormatString = "[" + time.toString() + "]";
@@ -53,6 +59,5 @@ void MainWindow::onConnectClicked()
    Dialog *dialog = new Dialog(this);
    dialog->show();
 
-  //  QMessageBox::information(this, tr("Hello"), tr("Enter a nickname."));
 }
 

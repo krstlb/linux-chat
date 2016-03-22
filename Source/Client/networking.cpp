@@ -1,30 +1,50 @@
 #include "networking.h"
 #include "mainwindow.h"
+#include "dialog.h"
 
 MainWindow *win;
 
-int listen_sd;
+int sd;
 
-void initConnection() {
-    struct sockaddr_in server, client_addr;
+void initConnection(int port, char* ip) {
+    struct sockaddr_in server;
+    struct hostent  *hp;
 
-    // Create a stream socket
-    if ((listen_sd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
-     //   SystemFatal("Cannot Create Socket!");
+    QMessageBox messageBox;
 
+    qDebug() << port << " " << ip;
 
-    // Bind an address to the socket
+    // Create a TCP Socket
+    if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+      perror("Cannot create socket");
+
+    // Set up address structure
     bzero((char *)&server, sizeof(struct sockaddr_in));
     server.sin_family = AF_INET;
- //   server.sin_port = htons(port);
-    server.sin_addr.s_addr = htonl(INADDR_ANY); // Accept connections from any client
+    server.sin_port = htons(port);
+    if ((hp = gethostbyname(ip)) == NULL)
+    {
+        messageBox.critical(0,"Error","Hostname could not be found.");
+        messageBox.setFixedSize(500,200);
+    }
+    bcopy(hp->h_addr, (char *)&server.sin_addr, hp->h_length);
 
-    if (bind(listen_sd, (struct sockaddr *)&server, sizeof(server)) == -1)
-   //     SystemFatal("bind error");
+    // Connecting to the server
+    if (::connect (sd, (struct sockaddr *)&server, sizeof(server)) == -1)
+    {
+        messageBox.critical(0,"Error","No good, Can not connect.");
+        messageBox.setFixedSize(500,200);
+    }
+}
 
-    // Listen for connections
-    // queue up to LISTENQ connect requests
-    listen(listen_sd, LISTENQ);
+void sendDataToServer(const char* msg) {
+
+    qDebug() << msg;
+
+    send (sd, msg, BUFLEN, 0);
+}
+
+void receiveDataFromServer() {
 
 }
 
@@ -32,10 +52,3 @@ void endConnection() {
 
 }
 
-void sendDataToServer() {
-
-}
-
-void receiveDataFromServer() {
-
-}

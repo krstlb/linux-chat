@@ -1,6 +1,7 @@
 #ifndef DIALOG_H
 #define DIALOG_H
 
+#include "global.h"
 #include <QDialog>
 
 namespace Ui {
@@ -15,9 +16,11 @@ public:
     explicit Dialog(QWidget *parent = 0);
     ~Dialog();
 
+private slots:
+    void on_okayDialogButton_accepted();
+
 private:
     Ui::Dialog *ui;
-    void onOkayButtonClicked();
 };
 
 #endif // DIALOG_H
