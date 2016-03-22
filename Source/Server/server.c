@@ -8,10 +8,10 @@
 #include <unistd.h>
 
 #define SERVER_TCP_PORT 7000	// Default port
-#define BUFLEN	80		//Buffer length
-#define TRUE	1
-#define LISTENQ	5
-#define MAXLINE 4096
+#define BUFLEN          80		//Buffer length
+#define TRUE            1
+#define LISTENQ         5
+#define MAXLINE         4096
 
 // Function Prototypes
 static void SystemFatal(const char* );
@@ -45,7 +45,7 @@ int main (int argc, char **argv)
 	// set SO_REUSEADDR so port can be resused imemediately after exit, i.e., after CTRL-c
         arg = 1;
         if (setsockopt (listen_sd, SOL_SOCKET, SO_REUSEADDR, &arg, sizeof(arg)) == -1)
-                SystemFatal("setsockopt");
+            SystemFatal("setsockopt");
 
 	// Bind an address to the socket
 	bzero((char *)&server, sizeof(struct sockaddr_in));
@@ -61,17 +61,17 @@ int main (int argc, char **argv)
 	listen(listen_sd, LISTENQ);
 
 	maxfd	= listen_sd;	// initialize
-   	maxi	= -1;		// index into client[] array
+   	maxi	= -1;		    // index into client[] array
 
-	for (i = 0; i < FD_SETSIZE; i++)
-           	client[i] = -1;             // -1 indicates available entry
+	for (i = 0; i < FD_SETSIZE; i++) {
+        client[i] = -1;     // -1 indicates available entry
+    }
  	FD_ZERO(&allset);
    	FD_SET(listen_sd, &allset);
 
-
 	while (TRUE)
 	{
-   		rset = allset;               // structure assignment
+   		rset = allset;         // structure assignment
 		nready = select(maxfd + 1, &rset, NULL, NULL, NULL);
 
       		if (FD_ISSET(listen_sd, &rset)) { // new connection
@@ -117,19 +117,29 @@ int main (int argc, char **argv)
 				}
 
 				write(sockfd, buf, BUFLEN);   // echo to client
+                printf(" Remote Address:  %s sending message: %s", inet_ntoa(client_addr.sin_addr), buf);
 
+                /*
 				if (n == 0) {				// connection closed by client
 					printf(" Remote Address:  %s closed connection\n", inet_ntoa(client_addr.sin_addr));
 					close(sockfd);
 					FD_CLR(sockfd, &allset);
                		client[i] = -1;
             	}
+                */
 
 				if (--nready <= 0)
             		break;        			// no more readable descriptors
 			}
-     		 }
+ 		 }
    	}
+
+    // Client disconnected
+    printf(" Remote Address:  %s closed connection\n", inet_ntoa(client_addr.sin_addr));
+    close(sockfd);
+    FD_CLR(sockfd, &allset);
+    client[i] = -1;
+
 	return(0);
 }
 
