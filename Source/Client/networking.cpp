@@ -4,8 +4,6 @@
 
 MainWindow *win;
 int sd;
-int n, bytes_to_read;
-char *host, *bp, rbuf[BUFLEN], sbuf[BUFLEN];
 
 void initConnection(int port, char* ip) {
     struct sockaddr_in server;
@@ -39,27 +37,30 @@ void initConnection(int port, char* ip) {
 }
 
 void sendDataToServer(const char* msg) {
+
     qDebug() << "Message: " << msg;
 
     send (sd, msg, BUFLEN, 0);
 }
 
-void receiveDataFromServer() {
-    qDebug("Receiving data from server");
-    while (1) {
-        bp = rbuf;
-        bytes_to_read = BUFLEN;
+QString receiveDataFromServer() {
+    char  rbuf[BUFLEN];
+    char  *bp;
+    int bytes_to_read, n;
 
-        // Client makes repeated calls to recv until no more data is expected to arrive
-        n = 0;
-        while ((n = recv (sd, bp, bytes_to_read, 0)) < BUFLEN)
-        {
-           bp += n;
-           bytes_to_read -= n;
-        }
+    bp = rbuf;
+    bytes_to_read = BUFLEN;
 
-        qDebug() << "Received: "<< rbuf;
+    while ((n = recv (sd, bp, bytes_to_read, 0)) < BUFLEN) {
+      bp += n;
+      bytes_to_read -= n;
     }
+
+    qDebug() << rbuf;
+
+    QString rString = QString::fromUtf8(rbuf);
+
+    return rString;
 }
 
 void endConnection() {
