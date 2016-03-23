@@ -50,6 +50,13 @@ void MainWindow::OnSendClicked()
 
     // focus user back to text field
     ui->sendMessageContent->setFocus();
+}
+
+void MainWindow::connectUser()
+{
+    Dialog *dialog = new Dialog(this);
+    dialog->show();
+}
 
 }
 
