@@ -42,6 +42,8 @@ void MainWindow::updateTextWindow(QString msgText)
 
     // focus user back to text field
     ui->sendMessageContent->setFocus();
+
+    // great job oscar
 }
 
 void MainWindow::connectUser()
