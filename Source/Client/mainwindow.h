@@ -33,10 +33,14 @@ private slots:
 
     void on_sendDataButton_clicked();
 
+    void on_pushButton_clicked();
+
 private:
     void connectSignalSlots();
 
     bool sending;
+
+    bool connected;
 
     Ui::MainWindow *ui;
 };

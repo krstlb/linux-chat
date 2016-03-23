@@ -47,7 +47,7 @@ void sendDataToServer(const char* msg) {
     send (sd, msg, BUFLEN, 0);
 }
 
-void receiveDataFromServer() {
+QString receiveDataFromServer() {
     qDebug("Receiving data from server");
     while (1) {
         bp = rbuf;
@@ -62,6 +62,9 @@ void receiveDataFromServer() {
         }
 
         qDebug() << "Received: "<< rbuf;
+
+        QString temp(rbuf);
+        return temp;
     }
 }
 

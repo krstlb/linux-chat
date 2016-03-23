@@ -11,9 +11,12 @@ ReceiveWorker::ReceiveWorker()
 
 void ReceiveWorker::doWork()
 {
+    QString msgText;
     qDebug() << "inside ReceiveDoWork";
     while (m_running) {
-        receiveDataFromServer();
+        msgText = receiveDataFromServer();
+
+        emit updateChatWindowSignal(msgText);
     }
     emit finished();
 }

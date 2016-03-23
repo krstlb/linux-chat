@@ -17,6 +17,7 @@ public slots:
 signals:
     void receiveData();
     void finished();
+    void updateChatWindowSignal(QString msgText);
 
 private:
     bool m_running;
