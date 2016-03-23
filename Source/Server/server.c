@@ -82,7 +82,7 @@ int main (int argc, char **argv)
             if ((new_sd = accept(listen_sd, (struct sockaddr *) &client_addr, &client_len)) == -1)
                 SystemFatal("accept error");
 
-            printf("Client connected: %s\n", inet_ntoa(client_addr.sin_addr));
+            printf(" Remote Address:  %s\n", inet_ntoa(client_addr.sin_addr));
 
             for (i = 0; i < FD_SETSIZE; i++)
                 if (client[i] < 0) {
