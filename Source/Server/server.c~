@@ -117,7 +117,7 @@ int main (int argc, char **argv)
                 bytes_to_read = BUFLEN;
                 //while ((n = read(sockfd, bp, bytes_to_read)) > 0) {
                 n = read(sockfd, bp, bytes_to_read);
-                printf("Client %d Bytes read: %zu\n", i, n);
+                printf("Read %zuB message from client%d[%s]: %s", n, i, inet_ntoa(client_addr.sin_addr), buf);
                 if (n > 0) {
                     bp += n;
                     bytes_to_read -= n;
@@ -125,10 +125,10 @@ int main (int argc, char **argv)
 
                 int c;
                 for (c = 0; c <= maxi; c++) {
-		    printf("yes");
-                    write(client[c], buf, BUFLEN);   // echo to client
+                    // Echo to all clients except the one who sent
+                    write(client[c], buf, BUFLEN);
                 }
-                printf(" Remote Address:  %s sending message: %s", inet_ntoa(client_addr.sin_addr), buf);
+                printf("Sending message from client%d[%s]:  %s", i, inet_ntoa(client_addr.sin_addr), buf);
 
                 // Close socket if client sent 'q'
                 if (buf[0] == 'q') {                // connection closed by client

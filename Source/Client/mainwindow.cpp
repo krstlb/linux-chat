@@ -29,7 +29,6 @@ void MainWindow::OnSendClicked()
     char* message = new char [msg.size()+1];
     strcpy(message, msg.c_str());
 
-
     // Send message
     std::thread sendThread(sendDataToServer, std::ref(message));
     sendThread.join();
@@ -38,9 +37,15 @@ void MainWindow::OnSendClicked()
     QString timeFormatString = "[" + time.toString() + "]";
     QString divFormat = "<div style = \"border: 5px solid white;color: white;\">";
 
-    // inserts html code formatting
+    // insert locally
     ui->textWindow->insertHtml(divFormat + timeFormatString + "<div style = \"background-color: rgba(0,0,0,0.5);\"></div>" +
                                msgText + "<div></div>" + "</div>");
+
+    QString test = receiveDataFromServer();
+
+
+    ui->textWindow->insertHtml("<div style = \"background-color: rgba(0,0,0,0.2);\"></div>" +
+                                test + "<div></div>" + "</div>");
 
     // clear text after you send
     ui->sendMessageContent->clear();
@@ -50,8 +55,8 @@ void MainWindow::OnSendClicked()
 
     // focus user back to text field
     ui->sendMessageContent->setFocus();
-
 }
+// clear text after you send
 
 void MainWindow::onConnectClicked()
 {

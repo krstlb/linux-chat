@@ -12,7 +12,9 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <thread>
-
+#include <QThread>
 #include <QtDebug>
+
+extern int sd;
 
 #endif // GLOBAL_H
