@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include <thread>
 
+#include <QStatusBar>
 #include <QtDebug>
 
 #endif // GLOBAL_H

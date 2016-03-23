@@ -31,6 +31,8 @@ private slots:
     void sendFinished();
     void disconnectClicked();
 
+    void on_sendDataButton_clicked();
+
 private:
     void connectSignalSlots();
 

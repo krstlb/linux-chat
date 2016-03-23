@@ -37,6 +37,8 @@ void initConnection(int port, char* ip) {
         messageBox.critical(0,"Error","No good, Can not connect.");
         messageBox.setFixedSize(500,200);
     }
+
+
 }
 
 void sendDataToServer(const char* msg) {

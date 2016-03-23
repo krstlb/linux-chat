@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     sending(false)
 {
     ui->setupUi(this);
-    connect(ui->sendDataButton, SIGNAL (clicked()),this, SLOT (OnSendClicked()));
+   // connect(ui->sendDataButton, SIGNAL (clicked()),this, SLOT (OnSendClicked()));
     connect(ui->actionConnect, SIGNAL (triggered()),this, SLOT (onConnectClicked()));
 }
 
@@ -23,6 +23,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::updateTextWindow(QString msgText)
 {
+    qDebug() << "Inside Update Text Window";
+
     QScrollBar *sb = ui->textWindow->verticalScrollBar();
     QTime time(QTime::currentTime());
 
@@ -53,7 +55,7 @@ void MainWindow::connectUser()
 // finite thread
 void MainWindow::OnSendClicked()
 {
-    QThread      *workerThread;
+   /* QThread      *workerThread;
     SendWorker   *worker;
 
     if (sending) {
@@ -62,7 +64,7 @@ void MainWindow::OnSendClicked()
     }
 
     workerThread = new QThread;
-    worker       = new SendWorker(ui->sendMessageContent->toPlainText());
+    worker       = new SendWorker(ui->sendMessageContent->text());
     worker->moveToThread(workerThread);
     connect(workerThread, SIGNAL(started()), worker, SLOT(doWork()));
     connect(worker, SIGNAL(finished()), workerThread, SLOT(quit()));
@@ -72,31 +74,14 @@ void MainWindow::OnSendClicked()
     connect(worker, SIGNAL(updateTextWindow(QString)), this, SLOT(updateTextWindow(QString)));
     workerThread->start();
 
-    sending = true;
+    sending = true;*/
 }
 
 // infinite thread
 void MainWindow::onConnectClicked()
 {
-    QThread             *workerThread;
-    ReceiveWorker       *worker;
-
     Dialog *dialog = new Dialog(this);
     dialog->show();
-    /*
-    workerThread = new QThread;
-    worker       = new ReceiveWorker;
-    worker->moveToThread(workerThread);
-    connect(workerThread, SIGNAL(started()), worker, SLOT(doWork()));
-    connect(worker, SIGNAL(finished()), workerThread, SLOT(quit()));
-    connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));
-    connect(workerThread, SIGNAL(finished()), workerThread, SLOT(deleteLater()));
-    connect(worker, SIGNAL(finished()), this, SLOT(disconnectClicked()));
-    connect(ui->actionDisconnect, SIGNAL(clicked()), worker, SLOT(stopWork()));
-    workerThread->start();
-
-    connected = true;
-    */
 }
 
 void MainWindow::sendFinished()
@@ -115,3 +100,27 @@ void MainWindow::connectSignalSlots()
     connect(ui->actionConnect, SIGNAL (triggered()),this, SLOT (connectClicked()));
 }
 
+
+void MainWindow::on_sendDataButton_clicked()
+{
+    QThread      *workerThread;
+    SendWorker   *worker;
+
+    if (sending) {
+        qDebug() << "Already sending!";
+        return;
+    }
+
+    workerThread = new QThread;
+    worker       = new SendWorker(ui->sendMessageContent->text());
+    worker->moveToThread(workerThread);
+    connect(workerThread, SIGNAL(started()), worker, SLOT(doWork()));
+    connect(worker, SIGNAL(finished()), workerThread, SLOT(quit()));
+    connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));
+    connect(worker, SIGNAL(finished()), this, SLOT(sendFinished()));
+    connect(workerThread, SIGNAL(finished()), workerThread, SLOT(deleteLater()));
+    connect(worker, SIGNAL(updateTextWindow(QString)), this, SLOT(updateTextWindow(QString)));
+    workerThread->start();
+
+    sending = true;
+}
