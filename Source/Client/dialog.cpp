@@ -1,11 +1,14 @@
+#include <QThread>
 #include "dialog.h"
 #include "networking.h"
 #include "ui_dialog.h"
 #include "mainwindow.h"
+#include "receiveworker.h"
 
 Dialog::Dialog(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::Dialog)
+    ui(new Ui::Dialog),
+    connected(false)
 {
     ui->setupUi(this);
 
@@ -46,5 +49,27 @@ void Dialog::on_okayDialogButton_accepted()
     sendThread.join();
 
     // close dialog
+
+    QThread             *workerThread;
+    ReceiveWorker       *worker;
+
+    if (connected) {
+        qDebug() << "Already connected!";
+        return;
+    }
+
+    workerThread = new QThread;
+    worker       = new ReceiveWorker;
+    worker->moveToThread(workerThread);
+    connect(workerThread, SIGNAL(started()), worker, SLOT(doWork()));
+    connect(worker, SIGNAL(finished()), workerThread, SLOT(quit()));
+    connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));
+    connect(workerThread, SIGNAL(finished()), workerThread, SLOT(deleteLater()));
+    connect(worker, SIGNAL(finished()), this, SLOT(disconnectClicked()));
+    //connect(ui->actionDisconnect, SIGNAL(clicked()), worker, SLOT(stopWork()));
+    workerThread->start();
+
+    connected = true;
+
     close();
 }

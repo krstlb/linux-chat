@@ -21,6 +21,7 @@ private slots:
 
 private:
     Ui::Dialog *ui;
+    bool connected;
 };
 
 #endif // DIALOG_H

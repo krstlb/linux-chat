@@ -16,12 +16,16 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     networking.cpp \
-    dialog.cpp
+    dialog.cpp \
+    receiveworker.cpp \
+    sendworker.cpp
 
 HEADERS  += mainwindow.h \
     networking.h \
     dialog.h \
-    global.h
+    global.h \
+    receiveworker.h \
+    sendworker.h
 
 FORMS    += mainwindow.ui \
     dialog.ui
