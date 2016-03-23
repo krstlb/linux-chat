@@ -3,9 +3,8 @@
 #include "ui_dialog.h"
 #include "mainwindow.h"
 
-Dialog::Dialog(QWidget *parent, MainWindow *mainWindow) :
+Dialog::Dialog(QWidget *parent) :
     QDialog(parent),
-    mainUi(mainWindow),
     ui(new Ui::Dialog)
 {
     ui->setupUi(this);
@@ -43,13 +42,9 @@ void Dialog::on_okayDialogButton_accepted()
 
     initConnection(port, hostIP);
 
-    qt = new QThread();
-    thread = new Thread();
+    std::thread sendThread(sendDataToServer, std::ref(msgToSend));
+    sendThread.join();
 
-    thread->moveToThread(qt);
-
-    connect(thread, SIGNAL(recvBufferSignal(QString)), mainUi, SLOT (AddToChat(QString)));
-    connect(qt, SIGNAL(started()), thread, SLOT (receiveData()));
     // close dialog
     close();
 }

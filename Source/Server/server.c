@@ -126,7 +126,9 @@ int main (int argc, char **argv)
                 int c;
                 for (c = 0; c <= maxi; c++) {
                     // Echo to all clients except the one who sent
+                    if (c != i) {
                     write(client[c], buf, BUFLEN);
+                    }
                 }
                 printf("Sending message from client%d[%s]:  %s", i, inet_ntoa(client_addr.sin_addr), buf);
 

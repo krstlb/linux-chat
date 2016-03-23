@@ -24,7 +24,6 @@ public:
 private slots:
     void OnSendClicked();
     void onConnectClicked();
-    void AddToChat(QString msg);
 
 private:
     Ui::MainWindow *ui;

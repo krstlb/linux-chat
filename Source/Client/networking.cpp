@@ -3,6 +3,7 @@
 #include "dialog.h"
 
 MainWindow *win;
+
 int sd;
 
 void initConnection(int port, char* ip) {
@@ -38,29 +39,13 @@ void initConnection(int port, char* ip) {
 
 void sendDataToServer(const char* msg) {
 
-    qDebug() << "Message: " << msg;
+    qDebug() << msg;
 
     send (sd, msg, BUFLEN, 0);
 }
 
-QString receiveDataFromServer() {
-    char  rbuf[BUFLEN];
-    char  *bp;
-    int bytes_to_read, n;
+void receiveDataFromServer() {
 
-    bp = rbuf;
-    bytes_to_read = BUFLEN;
-
-    while ((n = recv (sd, bp, bytes_to_read, 0)) < BUFLEN) {
-      bp += n;
-      bytes_to_read -= n;
-    }
-
-    qDebug() << rbuf;
-
-    QString rString = QString::fromUtf8(rbuf);
-
-    return rString;
 }
 
 void endConnection() {

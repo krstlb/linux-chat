@@ -12,6 +12,6 @@
 void initConnection(int port, char* ip);
 void endConnection();
 void sendDataToServer(const char* sbuf);
-QString receiveDataFromServer();
+void receiveDataFromServer();
 
 #endif // NETWORKING_H
