@@ -22,11 +22,21 @@ public:
     ~MainWindow();
 
 private slots:
+    void updateTextWindow(QString msgText);
+    void connectUser();
+
     void OnSendClicked();
     void onConnectClicked();
     void AddToChat(QString msg);
 
+    void sendFinished();
+    void disconnectClicked();
+
 private:
+    void connectSignalSlots();
+
+    bool sending;
+
     Ui::MainWindow *ui;
 };
 

@@ -25,7 +25,7 @@ private slots:
 
 private:
     Ui::Dialog *ui;
-    Ui::MainWindow *mainUi;
+    bool connected;
 };
 
 #endif // DIALOG_H

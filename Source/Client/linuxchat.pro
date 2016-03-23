@@ -17,13 +17,15 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     networking.cpp \
     dialog.cpp \
-    thread.cpp
+    receiveworker.cpp \
+    sendworker.cpp
 
 HEADERS  += mainwindow.h \
     networking.h \
     dialog.h \
     global.h \
-    thread.h
+    receiveworker.h \
+    sendworker.h
 
 FORMS    += mainwindow.ui \
     dialog.ui
