@@ -118,7 +118,7 @@ void MainWindow::updateTextWindow(QString msgText, QString userText)
     QString div = "<div>";
 
     // inserts html code formatting
-    ui->textWindow->insertHtml(div + "<span style = \"color: #A00691;\">" + userText + "</span>" + " - " +
+    ui->textWindow->insertHtml(div + "<span style = \"color: #9AA8D6;\">" + userText + "</span>" + " - " +
                                timeFormatString + "<br>" + "<span style = \"color: #D8D8D8;\">" + msgText
                                + "</span>" + "</div>" + "<br>");
 
@@ -185,7 +185,7 @@ void MainWindow::on_sendDataButton_clicked()
     QString div = "<div>";
 
     // inserts html code formatting
-    ui->textWindow->insertHtml(div + "<span style = \"color: #00A3BC;\">"
+    ui->textWindow->insertHtml(div + "<span style = \"color: #00A3BC; font: bold;\">"
                                + usernameText + "</span>" + " - " + timeFormatString + "<br>" + "<span style = \"color: #D8D8D8;\">" + msgText
                                + "</span>" + "</div>" + "<br>");
 

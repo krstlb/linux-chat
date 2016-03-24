@@ -57,6 +57,12 @@
           <height>16777215</height>
          </size>
         </property>
+        <property name="font">
+         <font>
+          <family>Droid Sans</family>
+          <pointsize>15</pointsize>
+         </font>
+        </property>
         <property name="selectionMode">
          <enum>QAbstractItemView::NoSelection</enum>
         </property>
@@ -84,6 +90,9 @@
         </property>
         <property name="autoFillBackground">
          <bool>false</bool>
+        </property>
+        <property name="textInteractionFlags">
+         <set>Qt::NoTextInteraction</set>
         </property>
        </widget>
        <widget class="QLineEdit" name="sendMessageContent">
@@ -216,10 +225,15 @@ font: bold;</string>
         <property name="geometry">
          <rect>
           <x>190</x>
-          <y>150</y>
+          <y>130</y>
           <width>421</width>
-          <height>27</height>
+          <height>51</height>
          </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>16</pointsize>
+         </font>
         </property>
        </widget>
        <widget class="QLineEdit" name="ipField">
@@ -228,8 +242,13 @@ font: bold;</string>
           <x>190</x>
           <y>240</y>
           <width>301</width>
-          <height>27</height>
+          <height>51</height>
          </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>16</pointsize>
+         </font>
         </property>
        </widget>
        <widget class="QLineEdit" name="portField">
@@ -238,18 +257,29 @@ font: bold;</string>
           <x>500</x>
           <y>240</y>
           <width>111</width>
-          <height>27</height>
+          <height>51</height>
          </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>16</pointsize>
+         </font>
         </property>
        </widget>
        <widget class="QLabel" name="label_2">
         <property name="geometry">
          <rect>
           <x>190</x>
-          <y>120</y>
+          <y>100</y>
           <width>241</width>
           <height>17</height>
          </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Droid Sans</family>
+          <pointsize>13</pointsize>
+         </font>
         </property>
         <property name="text">
          <string>Enter your username</string>
@@ -264,6 +294,12 @@ font: bold;</string>
           <height>17</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <family>Droid Sans</family>
+          <pointsize>13</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>IP Address</string>
         </property>
@@ -277,6 +313,12 @@ font: bold;</string>
           <height>17</height>
          </rect>
         </property>
+        <property name="font">
+         <font>
+          <family>Droid Sans</family>
+          <pointsize>13</pointsize>
+         </font>
+        </property>
         <property name="text">
          <string>Port</string>
         </property>
@@ -284,11 +326,20 @@ font: bold;</string>
        <widget class="QPushButton" name="pushButton">
         <property name="geometry">
          <rect>
-          <x>350</x>
-          <y>300</y>
+          <x>500</x>
+          <y>310</y>
           <width>111</width>
           <height>51</height>
          </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Droid Sans</family>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <italic>false</italic>
+          <bold>true</bold>
+         </font>
         </property>
         <property name="styleSheet">
          <string notr="true">background-color: #748BD9;
@@ -296,6 +347,58 @@ font: bold;</string>
         </property>
         <property name="text">
          <string>Connect</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="disconnectButton">
+        <property name="geometry">
+         <rect>
+          <x>350</x>
+          <y>310</y>
+          <width>141</width>
+          <height>51</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Droid Sans</family>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <italic>false</italic>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: #748BD9;
+font: bold;</string>
+        </property>
+        <property name="text">
+         <string>Disconnect</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="disconnectButton_2">
+        <property name="geometry">
+         <rect>
+          <x>190</x>
+          <y>310</y>
+          <width>151</width>
+          <height>51</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <family>Droid Sans</family>
+          <pointsize>12</pointsize>
+          <weight>75</weight>
+          <italic>false</italic>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: #748BD9;
+font: bold;</string>
+        </property>
+        <property name="text">
+         <string>Default</string>
         </property>
        </widget>
       </widget>
