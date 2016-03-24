@@ -19,22 +19,25 @@ using namespace std;
 map<int, string> clientlist;
 map<int, string> usernamelist;
 const string usernametag = "thisisausernameguud";
+const string closesdtag = "closesd";
+int client[FD_SETSIZE];
 
 // Function Prototypes
 static void SystemFatal(const char* );
 void print_clientlist(map<int, string> &cl);
 void print_usernamelist(map<int, string> &ul);
 string create_s_clientlist();
+void close_connection(map<int, string> &cl, map<int, string> &ul, int sockfd, int maxi, string ip);
 
 
 int main (int argc, char **argv)
 {
     int i, maxi, nready, bytes_to_read, arg;
-    int listen_sd, new_sd, sockfd, port, maxfd, client[FD_SETSIZE];
+    int listen_sd, new_sd, sockfd, port, maxfd;
     struct sockaddr_in server, client_addr;
     char *bp, buf[BUFLEN];
     socklen_t client_len;
-    size_t n;
+    size_t bytes_read;
     fd_set rset, allset;
 
     switch(argc)
@@ -70,6 +73,7 @@ int main (int argc, char **argv)
 
     // Listen for connections
     // queue up to LISTENQ connect requests
+    printf("Listening for connections on port %d...\n", port);
     listen(listen_sd, LISTENQ);
 
     maxfd   = listen_sd;    // initialize
@@ -81,7 +85,7 @@ int main (int argc, char **argv)
     FD_ZERO(&allset);
     FD_SET(listen_sd, &allset);
 
-    while (TRUE)
+    while (1)
     {
         rset = allset;         // structure assignment
         nready = select(maxfd + 1, &rset, NULL, NULL, NULL);
@@ -121,7 +125,6 @@ int main (int argc, char **argv)
          }
         // receive data from client
         for (i = 0; i <= maxi; i++) {
-
             if ((sockfd = client[i]) < 0)
                 continue;
 
@@ -129,41 +132,53 @@ int main (int argc, char **argv)
                 bp = buf;
                 bytes_to_read = BUFLEN;
 
-                n = read(sockfd, bp, bytes_to_read);
-                if (n > 0) {
-                    bp += n;
-                    bytes_to_read -= n;
+                bytes_read = read(sockfd, bp, bytes_to_read);
+                if (bytes_read > 0) {
+                    bp += bytes_read;
+                    bytes_to_read -= bytes_read;
                 }
-                printf("fd[%4d] IP[%15s] rcv: %s\n", new_sd, inet_ntoa(client_addr.sin_addr), buf);
+                printf("Received from client %s: %s\n", inet_ntoa(client_addr.sin_addr), buf);
 
-                string rusername(buf);
+                string rcvstring(buf);
                 // Received username
-                if (rusername.find(usernametag) != string::npos) {
+                if (rcvstring.find(usernametag) != string::npos) {
+                    printf("Got user name\n");
                     size_t index = 0;
                     while (true) {
-                         index = rusername.find(usernametag, index);
-                         if (index == std::string::npos) break;
+                        index = rcvstring.find(usernametag, index);
+                        if (index == std::string::npos) break;
 
-                        string username = rusername.replace(index, rusername.length(), "");
+                        string username = rcvstring.replace(index, rcvstring.length(), "");
                         usernamelist.insert(pair<int, string>(new_sd, username));
+                        print_usernamelist(usernamelist);
                      }
 
                     string s_clientlist = create_s_clientlist();
                     for (int c = 0; c <= maxi; c++) {
                         write(client[c], s_clientlist.c_str(), BUFLEN);
                     }
-                } else { // Received message
+                // Received disconnect message
+                } else if (rcvstring.find(closesdtag) != string::npos) {
+                    printf("Got disconnect message\n");
+                    write(sockfd, buf, BUFLEN);
+                    close_connection(clientlist, usernamelist, sockfd, maxi, inet_ntoa(client_addr.sin_addr));
+                    FD_CLR(sockfd, &allset);
+                    client[i] = -1;
+                    break;
+                // Received regular message
+                } else {
                     for (int c = 0; c <= maxi; c++) {
-                        if (c != i) {
+                        if (client[c] >= 0 && c != i) {
                             write(client[c], buf, BUFLEN);
                         }
                     }
                 }
 
-                printf("fd[%4d] IP[%15s] snd: %s\n", sockfd, inet_ntoa(client_addr.sin_addr), buf);
+                printf("Sent to client %s: %s\n", inet_ntoa(client_addr.sin_addr), buf);
 
                 // Client disconnected
-                if (n == 0) {
+                if (bytes_read == 0) {
+                    /*
                     // Remove client from list
                     if (clientlist.find(sockfd) != clientlist.end()) {
                         clientlist.erase(sockfd);
@@ -180,13 +195,19 @@ int main (int argc, char **argv)
                             write(client[c], s_clientlist.c_str(), BUFLEN);
                         }
                     }
-
+                    printf("Client %s disconnected.\n", inet_ntoa(client_addr.sin_addr));
                     close(sockfd);
                     FD_CLR(sockfd, &allset);
                     client[i] = -1;
+                    */
+                    close_connection(clientlist, usernamelist, sockfd, maxi, inet_ntoa(client_addr.sin_addr));
+                    FD_CLR(sockfd, &allset);
+                    client[i] = -1;;
+                    break;
                 }
             }
         }
+        continue;
     }
     return(0);
 }
@@ -199,18 +220,16 @@ static void SystemFatal(const char* message)
 }
 
 void print_clientlist(map<int, string> &cl) {
-    printf("\n================\n");
     printf("Updated client list:\n");
     for (map<int, string>::iterator it = cl.begin(); it != cl.end(); ++it) {
-        printf("fd[%d] IP[%s] ", it->first, it->second.c_str());
+        printf("fd[%d] IP[%s]\n", it->first, it->second.c_str());
     }
 }
 
 void print_usernamelist(map<int, string> &ul) {
-    printf("\n================\n");
     printf("Updated username list:\n");
     for (map<int, string>::iterator it = ul.begin(); it != ul.end(); ++it) {
-        printf("fd[%d] name[%s] ", it->first, it->second.c_str());
+        printf("fd[%d] name[%s]\n", it->first, it->second.c_str());
     }
 }
 
@@ -224,4 +243,25 @@ string create_s_clientlist() {
     }
 
     return result;
+}
+
+void close_connection(map<int, string> &cl, map<int, string> &ul, int sockfd, int maxi, string ip) {
+    // Remove client from list
+    if (cl.find(sockfd) != cl.end()) {
+        clientlist.erase(sockfd);
+        print_clientlist(cl);
+    }
+    //printf("fd[%4d] IP[%15s] disconnected.\n", it->first->first, it->second->second.c_str());
+
+    // Remove username from list
+    if (ul.find(sockfd) != ul.end()) {
+        ul.erase(sockfd);
+        string s_clientlist = create_s_clientlist();
+        print_usernamelist(ul);
+        for (int c = 0; c <= maxi; c++) {
+            write(client[c], s_clientlist.c_str(), BUFLEN);
+        }
+    }
+    printf("Client %s disconnected.\n", ip.c_str());
+    close(sockfd);
 }
