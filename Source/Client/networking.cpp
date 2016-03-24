@@ -59,7 +59,7 @@ char *host, *bp, rbuf[BUFLEN], sbuf[BUFLEN];
 -- This function initializes the connection with the client and the server by creating a tcp socket and
 -- calling connect to the server.
 ---------------------------------------------------------------------------------------------------------------------*/
-void initConnection(int port, char* ip) {
+int initConnection(int port, char* ip) {
     struct sockaddr_in server;
     struct hostent  *hp;
 

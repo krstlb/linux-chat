@@ -1,35 +1,34 @@
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <stdlib.h>
-#include <string>
-#include <strings.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <map>
-using namespace std;
+#include "server.h"
 
-#define SERVER_TCP_PORT 7000    // Default port
-#define BUFLEN          6969      //Buffer length
-#define TRUE            1
-#define LISTENQ         5
-#define MAXLINE         4096
-
-map<int, string> clientlist;
-map<int, string> usernamelist;
-const string usernametag = "thisisausernameguud";
-const string closesdtag = "closesd";
-int client[FD_SETSIZE];
-
-// Function Prototypes
-static void SystemFatal(const char* );
-void print_clientlist(map<int, string> &cl);
-void print_usernamelist(map<int, string> &ul);
-string create_s_clientlist();
-void close_connection(map<int, string> &cl, map<int, string> &ul, int sockfd, int maxi, string ip);
-
-
+/*---------------------------------------------------------------------------------------
+--  SOURCE FILE:    server.cpp
+--
+--  PROGRAM:        Linux Chat application
+--
+--  FUNCTIONS:
+--
+--         static void SystemFatal(const char* );
+--         void print_clientlist(map<int, string> &cl);
+--         void print_usernamelist(map<int, string> &ul);
+--         string create_s_clientlist();
+--         void close_connection(map<int, string> &cl, map<int, string> &ul, int sockfd,
+--                               int maxi, string ip);
+--
+--
+--  DATE:           March 23, 2016
+--
+--  REVISIONS:      (Date and Description)
+--
+--  DESIGNERS:      Krystle
+--
+--  PROGRAMMER:     Krystle
+--
+--  NOTES:
+--  Main entry point of the program.
+--  Connect, send, and receive functions with multiplexed I/O. Uses the select call to
+--  handle new client connections. Messages received from a client are echoed back to
+--  all other clients connected.
+---------------------------------------------------------------------------------------*/
 int main (int argc, char **argv)
 {
     int i, maxi, nready, bytes_to_read, arg;
@@ -189,13 +188,47 @@ int main (int argc, char **argv)
     return(0);
 }
 
-// Prints the error stored in errno and aborts the program.
+/*---------------------------------------------------------------------------------------
+--  FUNCTION:       SystemFatal
+--
+--  DATE:           March 23, 2016
+--
+--  REVISIONS:      (Date and Description)
+--
+--  DESIGNERS:      Krystle Bulalakaw
+--
+--  PROGRAMMER:     Krystle Bulalakaw
+--
+--  INTERFACE:
+--                  static void SystemFatal(const char* message)
+--                              char* message: the error message to print
+--  NOTES:
+--  Prints the error message and aborts the program.
+---------------------------------------------------------------------------------------*/
 static void SystemFatal(const char* message)
 {
     perror (message);
     exit (EXIT_FAILURE);
 }
 
+/*---------------------------------------------------------------------------------------
+--  FUNCTION:       print_clientlist
+--
+--  DATE:           March 23, 2016
+--
+--  REVISIONS:      (Date and Description)
+--
+--  DESIGNERS:      Krystle Bulalakaw
+--
+--  PROGRAMMER:     Krystle Bulalakaw
+--
+--  INTERFACE:
+--                  print_clientlist(map<int, string> &cl)
+--                              map<int, string> &cl: the map holding the client list
+--  NOTES:
+--  Iterates through the list of connected clients and prints each one's descriptor
+--  and IP address.
+---------------------------------------------------------------------------------------*/
 void print_clientlist(map<int, string> &cl) {
     printf("Updated client list:\n");
     for (map<int, string>::iterator it = cl.begin(); it != cl.end(); ++it) {
@@ -203,6 +236,24 @@ void print_clientlist(map<int, string> &cl) {
     }
 }
 
+/*---------------------------------------------------------------------------------------
+--  FUNCTION:       print_usernamelist
+--
+--  DATE:           March 23, 2016
+--
+--  REVISIONS:      (Date and Description)
+--
+--  DESIGNERS:      Krystle Bulalakaw
+--
+--  PROGRAMMER:     Krystle Bulalakaw
+--
+--  INTERFACE:
+--                  print_usernamelist(map<int, string> &ul)
+--                              map<int, string> &ul: the map holding the username list
+--  NOTES:
+--  Iterates through the list of connected clients and prints each one's descriptor
+--  and username.
+---------------------------------------------------------------------------------------*/
 void print_usernamelist(map<int, string> &ul) {
     printf("Updated username list:\n");
     for (map<int, string>::iterator it = ul.begin(); it != ul.end(); ++it) {
@@ -210,6 +261,23 @@ void print_usernamelist(map<int, string> &ul) {
     }
 }
 
+/*---------------------------------------------------------------------------------------
+--  FUNCTION:       create_s_clientlist
+--
+--  DATE:           March 23, 2016
+--
+--  REVISIONS:      (Date and Description)
+--
+--  DESIGNERS:      Krystle Bulalakaw
+--
+--  PROGRAMMER:     Krystle Bulalakaw
+--
+--  INTERFACE:
+--                  string create_s_clientlist()
+--  NOTES:
+--  Creates a delimited string clientlist to be sent to each client to notify
+--  who is online.
+---------------------------------------------------------------------------------------*/
 string create_s_clientlist() {
     string result = "";
     int i = 1;
@@ -221,6 +289,30 @@ string create_s_clientlist() {
     return result;
 }
 
+/*---------------------------------------------------------------------------------------
+--  FUNCTION:       close_connection
+--
+--  DATE:           March 23, 2016
+--
+--  REVISIONS:      (Date and Description)
+--
+--  DESIGNERS:      Krystle Bulalakaw
+--
+--  PROGRAMMER:     Krystle Bulalakaw
+--
+--  INTERFACE:
+--                  close_connection(map<int, string> &cl, map<int, string> &ul,
+--                              int sockfd, int maxi, string ip)
+--                          map<int, string> &cl: client list
+--                          map<int, string> &ul: username list
+--                          int sockfd: descriptor of client to disconnect
+--                          int maxi: max number of clients
+--                          string ip: ip address of client to disconnect
+--  NOTES:
+--  Finds the client in the client and username lists and removes it. Then recreates
+--  the delimited string of all clients and sends it to each client. Finally, closes
+--  the target socket connection.
+---------------------------------------------------------------------------------------*/
 void close_connection(map<int, string> &cl, map<int, string> &ul, int sockfd, int maxi, string ip) {
     // Remove client from list
     if (cl.find(sockfd) != cl.end()) {
