@@ -3,6 +3,30 @@
 #include "receiveworker.h"
 #include "networking.h"
 
+/*---------------------------------------------------------------------------------------
+--  SOURCE FILE:    receiveworker.cpp
+--
+--  PROGRAM:        Linux Chat application
+--
+--  FUNCTIONS:
+--
+--      ReceiveWorker::ReceiveWorker() : m_running(true)
+--      void ReceiveWorker::doWork()
+--      void ReceiveWorker::stopWork()
+--      void ReceiveWorker::stopWork()
+--
+--
+--  DATE:           March 23, 2016
+--
+--  REVISIONS:      (Date and Description)
+--
+--  DESIGNERS:      Krystle Bulalakaw
+--
+--  PROGRAMMER:     Krystle Bulalakaw
+--
+--  NOTES:
+---------------------------------------------------------------------------------------*/
+
 ReceiveWorker::ReceiveWorker()
     : m_running(true)
 {

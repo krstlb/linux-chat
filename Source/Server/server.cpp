@@ -102,6 +102,12 @@ int main (int argc, char **argv)
                     break;
                 }
 
+            // send list of clients to all clients
+            int c;
+            for (c = 0; c <= maxi; c++) {
+                // Echo to all clients except the one who sent
+                send_clientlist(userinfolist, clientlist, new_sd);
+            }
 
             if (i == FD_SETSIZE) {
                 SystemFatal ("Too many clients");
