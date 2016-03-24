@@ -91,6 +91,7 @@ void ReceiveWorker::doWork()
 
         if (msgText.contains("closesd")) {
             endConnection();
+            return;
         }
 
         if (msgText.contains("thisisausernameguud")) {

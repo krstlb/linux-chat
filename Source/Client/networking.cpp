@@ -68,8 +68,10 @@ int initConnection(int port, char* ip) {
     qDebug() << port << " " << ip;
 
     // Create a TCP Socket
-    if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+    if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
       perror("Cannot create socket");
+      return -1;
+    }
 
     // Set up address structure
     bzero((char *)&server, sizeof(struct sockaddr_in));
@@ -79,6 +81,7 @@ int initConnection(int port, char* ip) {
     {
         messageBox.critical(0,"Error","Hostname could not be found.");
         messageBox.setFixedSize(500,200);
+        return -1;
     }
     bcopy(hp->h_addr, (char *)&server.sin_addr, hp->h_length);
 
@@ -87,8 +90,9 @@ int initConnection(int port, char* ip) {
     {
         messageBox.critical(0,"Error","No good, Can not connect.");
         messageBox.setFixedSize(500,200);
+        return -1;
     }
-
+    return 0;
 
 }
 
