@@ -106,7 +106,6 @@ int main (int argc, char **argv)
                     break;
                 }
 
-
             if (i == FD_SETSIZE) {
                 SystemFatal ("Too many clients");
                 continue;
@@ -168,6 +167,7 @@ int main (int argc, char **argv)
                 // Received regular message
                 } else {
                     for (int c = 0; c <= maxi; c++) {
+                        // Echo to all clients except sender
                         if (client[c] >= 0 && c != i) {
                             write(client[c], buf, BUFLEN);
                         }
@@ -178,28 +178,6 @@ int main (int argc, char **argv)
 
                 // Client disconnected
                 if (bytes_read == 0) {
-                    /*
-                    // Remove client from list
-                    if (clientlist.find(sockfd) != clientlist.end()) {
-                        clientlist.erase(sockfd);
-                        print_clientlist(clientlist);
-                    }
-                    //printf("fd[%4d] IP[%15s] disconnected.\n", it->first->first, it->second->second.c_str());
-
-                    // Remove username from list
-                    if (usernamelist.find(sockfd) != usernamelist.end()) {
-                        usernamelist.erase(sockfd);
-                        string s_clientlist = create_s_clientlist();
-                        print_usernamelist(usernamelist);
-                        for (int c = 0; c <= maxi; c++) {
-                            write(client[c], s_clientlist.c_str(), BUFLEN);
-                        }
-                    }
-                    printf("Client %s disconnected.\n", inet_ntoa(client_addr.sin_addr));
-                    close(sockfd);
-                    FD_CLR(sockfd, &allset);
-                    client[i] = -1;
-                    */
                     close_connection(clientlist, usernamelist, sockfd, maxi, inet_ntoa(client_addr.sin_addr));
                     FD_CLR(sockfd, &allset);
                     client[i] = -1;;
@@ -207,7 +185,6 @@ int main (int argc, char **argv)
                 }
             }
         }
-        continue;
     }
     return(0);
 }
@@ -237,8 +214,7 @@ string create_s_clientlist() {
     string result = "";
     int i = 1;
 
-    for (map<int, string>::iterator it = usernamelist.begin(); it != usernamelist.end(); ++it, ++i)
-    {
+    for (map<int, string>::iterator it = usernamelist.begin(); it != usernamelist.end(); ++it, ++i) {
         result += it->second + "<" + usernametag;
     }
 
@@ -251,7 +227,6 @@ void close_connection(map<int, string> &cl, map<int, string> &ul, int sockfd, in
         clientlist.erase(sockfd);
         print_clientlist(cl);
     }
-    //printf("fd[%4d] IP[%15s] disconnected.\n", it->first->first, it->second->second.c_str());
 
     // Remove username from list
     if (ul.find(sockfd) != ul.end()) {
@@ -262,6 +237,7 @@ void close_connection(map<int, string> &cl, map<int, string> &ul, int sockfd, in
             write(client[c], s_clientlist.c_str(), BUFLEN);
         }
     }
+
     printf("Client %s disconnected.\n", ip.c_str());
     close(sockfd);
 }
