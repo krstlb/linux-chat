@@ -27,12 +27,55 @@
 --  NOTES:
 ---------------------------------------------------------------------------------------*/
 
+/*--------------------------------------------------------------------------------------
+-- FUNCTION: ReceiveWorker
+--
+-- DATE: March 23, 2016
+--
+-- REVISIONS: None
+--
+-- DESIGNER: Krystle Bulalakaw
+--
+-- PROGRAMMER: Krystle Bulalakaw
+--
+-- INTERFACE:
+--
+--          void ()
+--
+-- RETURNS: void
+--
+-- NOTES:
+-- Constructor for ReceiveWorker thread.
+---------------------------------------------------------------------------------------*/
 ReceiveWorker::ReceiveWorker()
     : m_running(true)
 {
 
 }
 
+/*--------------------------------------------------------------------------------------
+-- FUNCTION: doWork()
+--
+-- DATE: March 23, 2016
+--
+-- REVISIONS: None
+--
+-- DESIGNER: Krystle Bulalakaw
+--
+-- PROGRAMMER: Krystle Bulalakaw
+--
+-- INTERFACE:
+--
+--          void ()
+--
+-- RETURNS: void
+--
+-- NOTES:
+-- Background tasks for receive worker thread to execute while it is supposed to be
+-- running.
+-- Receives data from the server and updates GUI accordingly (update received text
+-- window / update client list / disconnect)
+---------------------------------------------------------------------------------------*/
 void ReceiveWorker::doWork()
 {
     QString msgText;
@@ -74,6 +117,26 @@ void ReceiveWorker::doWork()
     emit finished();
 }
 
+/*--------------------------------------------------------------------------------------
+-- FUNCTION: stopWork
+--
+-- DATE: March 23, 2016
+--
+-- REVISIONS: None
+--
+-- DESIGNER: Krystle Bulalakaw
+--
+-- PROGRAMMER: Krystle Bulalakaw
+--
+-- INTERFACE:
+--
+--          void ()
+--
+-- RETURNS: void
+--
+-- NOTES:
+-- Set the running boolean for the work thread to false.
+---------------------------------------------------------------------------------------*/
 void ReceiveWorker::stopWork()
 {
     m_running = false;

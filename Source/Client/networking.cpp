@@ -39,11 +39,11 @@ char *host, *bp, rbuf[BUFLEN], sbuf[BUFLEN];
 --
 -- DATE: March 23, 2016
 --
--- REVISIONS: March 23 - change return to int (Krystle)
+-- REVISIONS: None
 --
 -- DESIGNER: Oscar Kwan
 --
--- PROGRAMMER: Oscar Kwan, Krystle Bulalakaw
+-- PROGRAMMER: Oscar Kwan
 --
 -- INTERFACE:
 --
@@ -53,13 +53,13 @@ char *host, *bp, rbuf[BUFLEN], sbuf[BUFLEN];
 --              char* ip
 --                  - ip address from user input
 --
--- RETURNS: int
+-- RETURNS: void
 --
 -- NOTES:
 -- This function initializes the connection with the client and the server by creating a tcp socket and
 -- calling connect to the server.
 ---------------------------------------------------------------------------------------------------------------------*/
-int initConnection(int port, char* ip) {
+void initConnection(int port, char* ip) {
     struct sockaddr_in server;
     struct hostent  *hp;
 
@@ -68,10 +68,8 @@ int initConnection(int port, char* ip) {
     qDebug() << port << " " << ip;
 
     // Create a TCP Socket
-    if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
+    if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
       perror("Cannot create socket");
-      return -1;
-    }
 
     // Set up address structure
     bzero((char *)&server, sizeof(struct sockaddr_in));
@@ -81,7 +79,6 @@ int initConnection(int port, char* ip) {
     {
         messageBox.critical(0,"Error","Hostname could not be found.");
         messageBox.setFixedSize(500,200);
-        return -1;
     }
     bcopy(hp->h_addr, (char *)&server.sin_addr, hp->h_length);
 
@@ -90,10 +87,9 @@ int initConnection(int port, char* ip) {
     {
         messageBox.critical(0,"Error","No good, Can not connect.");
         messageBox.setFixedSize(500,200);
-        return -1;
     }
 
-    return 0;
+
 }
 
 /*---------------------------------------------------------------------------------------------------------------------
@@ -162,6 +158,26 @@ QString receiveDataFromServer() {
     }
 }
 
+/*--------------------------------------------------------------------------------------
+-- FUNCTION: endConnection();
+--
+-- DATE: March 23, 2016
+--
+-- REVISIONS: None
+--
+-- DESIGNER: Krystle Bulalakaw
+--
+-- PROGRAMMER: Krystle Bulalakaw
+--
+-- INTERFACE:
+--
+--          void ()
+--
+-- RETURNS: void
+--
+-- NOTES:
+-- Close the socket connection to the server.
+---------------------------------------------------------------------------------------*/
 void endConnection() {
     qDebug() << "closing socket";
     close(sd);
