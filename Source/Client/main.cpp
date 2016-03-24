@@ -18,9 +18,3 @@ int main(int argc, char *argv[])
 
     return a.exec();
 }
-
-/* QTextStream& qStdOut()
-{
-    QTextStream ts( stdout );
-    return ts;
-} */

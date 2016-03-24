@@ -1,9 +1,56 @@
-#include <QThread>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "networking.h"
 #include "receiveworker.h"
 
+/*---------------------------------------------------------------------------------------
+--  SOURCE FILE:    mainwindow.cpp
+--
+--  PROGRAM:        Linux Game
+--
+--  FUNCTIONS:
+--
+--      MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow), sending(false)
+--      MainWindow::~MainWindow()
+--      void MainWindow::updateTextWindow(QString msgText, QString userText)
+--      void MainWindow::sendFinished()
+--      void MainWindow::disconnectClicked()
+--      void MainWindow::on_sendDataButton_clicked()
+--      void MainWindow::on_pushButton_clicked()
+--      void MainWindow::on_exportFileButton_clicked()
+--
+--
+--  DATE:           March 23, 2016
+--
+--  REVISIONS:      (Date and Description)
+--
+--  DESIGNERS:      Oscar Kwan, Krystle Bulalakaw
+--
+--  PROGRAMMER:     Oscar Kwan, Krystle Bulalakaw
+--
+--  NOTES:
+--  This class contains the logic behind the main window gui elements. It contains the functions
+--  needed when different elements are interacted with by the user. These functios including
+--  hitting the send and connect button, or exporting a log file.
+---------------------------------------------------------------------------------------*/
+
+
+/*---------------------------------------------------------------------------------------------------------------------
+-- FUNCTION: MainWindow
+--
+-- DATE: March 23, 2016
+--
+-- REVISIONS: None
+--
+-- DESIGNER: Oscar Kwan
+--
+-- PROGRAMMER: Oscar Kwan
+--
+-- RETURNS: constructor
+--
+-- NOTES:
+-- Constructor that initializes the ui, and does any connect signals needed.
+---------------------------------------------------------------------------------------------------------------------*/
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -11,13 +58,55 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     connect(ui->sendMessageContent, SIGNAL(returnPressed()), ui->sendDataButton, SIGNAL(clicked()));
+    ui->sendMessageContent->setClearButtonEnabled(true);
 }
 
+/*---------------------------------------------------------------------------------------------------------------------
+-- FUNCTION: ~MainWindow
+--
+-- DATE: March 23, 2016
+--
+-- REVISIONS: None
+--
+-- DESIGNER: Oscar Kwan
+--
+-- PROGRAMMER: Oscar Kwan
+--
+-- RETURNS: destructor
+--
+-- NOTES:
+-- destructor.
+---------------------------------------------------------------------------------------------------------------------*/
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
+/*---------------------------------------------------------------------------------------------------------------------
+-- FUNCTION: updateTextWindow
+--
+-- DATE: March 23, 2016
+--
+-- REVISIONS: None
+--
+-- DESIGNER: Oscar Kwan
+--
+-- PROGRAMMER: Oscar Kwan
+--
+-- INTERFACE:
+--
+--          void (QString msgText, QString userText)
+--              QString msgText
+--                  - message received from clients
+--              QString userText
+--                  - username
+--
+-- RETURNS: void
+--
+-- NOTES:
+-- This function updates the gui whenever a message is received from other clients.
+-- It also formats it into a nicely displayed html string with colours.
+---------------------------------------------------------------------------------------------------------------------*/
 void MainWindow::updateTextWindow(QString msgText, QString userText)
 {
     QScrollBar *sb = ui->textWindow->verticalScrollBar();
@@ -46,13 +135,28 @@ void MainWindow::disconnectClicked()
     //connected = false;
 }
 
-void MainWindow::connectSignalSlots()
-{
-    connect(ui->sendDataButton, SIGNAL (clicked()),this, SLOT (sendClicked()));
-    connect(ui->actionConnect, SIGNAL (triggered()),this, SLOT (connectClicked()));
-}
 
-
+/*---------------------------------------------------------------------------------------------------------------------
+-- FUNCTION: on_sendDataButton_clicked
+--
+-- DATE: March 23, 2016
+--
+-- REVISIONS: None
+--
+-- DESIGNER: Oscar Kwan
+--
+-- PROGRAMMER: Oscar Kwan
+--
+-- INTERFACE:
+--
+--          void ()
+--
+-- RETURNS: void
+--
+-- NOTES:
+-- This function updates the text window on local changes. So it echos your own text with different styling from
+-- messages received from other clients. It also sends the message to the server so it can send it to other clients.
+---------------------------------------------------------------------------------------------------------------------*/
 void MainWindow::on_sendDataButton_clicked()
 {
 
@@ -91,19 +195,45 @@ void MainWindow::on_sendDataButton_clicked()
 
 }
 
-// when connect button click
+/*---------------------------------------------------------------------------------------------------------------------
+-- FUNCTION: on_pushButton_clicked
+--
+-- DATE: March 23, 2016
+--
+-- REVISIONS: None
+--
+-- DESIGNER: Oscar Kwan
+--
+-- PROGRAMMER: Oscar Kwan
+--
+-- INTERFACE:
+--
+--          void ()
+--
+-- RETURNS: void
+--
+-- NOTES:
+-- This function is executed when the connect button is pressed. It takes in the user input's username, ip and port and
+-- uses it to connect with the server. After a successful connect, it creates a QThread that begins infinetely waiting
+-- for any messages to be received. Before it does this, it sends it's username to the server.
+---------------------------------------------------------------------------------------------------------------------*/
 void MainWindow::on_pushButton_clicked()
 {
     int port;
     std::string host;
     char* hostIP;
 
+    QThread             *workerThread;
+    ReceiveWorker       *worker;
+
+    QString tempUser;
     QString username = ui->usernameField->text();
 
-    username.append("thisisausernameguud");
+    tempUser = username;
+    tempUser.append("thisisausernameguud");
 
     // convert qstring message into char * message for sending
-    std::string msg = username.toStdString();
+    std::string msg = tempUser.toStdString();
     char* msgToSend = new char [msg.size()+1];
     strcpy(msgToSend, msg.c_str());
 
@@ -118,12 +248,11 @@ void MainWindow::on_pushButton_clicked()
 
     initConnection(port, hostIP);
 
+    // send username
     std::thread sendThread(sendDataToServer, std::ref(msgToSend));
     sendThread.join();
 
-    QThread             *workerThread;
-    ReceiveWorker       *worker;
-
+    // QThread for receiving
     workerThread = new QThread;
     worker       = new ReceiveWorker;
     worker->moveToThread(workerThread);
@@ -138,9 +267,36 @@ void MainWindow::on_pushButton_clicked()
 
     connected = true;
 
+    // switch to chat tab
     ui->tabWidget->setCurrentIndex(0);
+
+    // add local name to user list
+    ui->listWidget->addItem(username);
+    ui->connectionLabel->setStyleSheet("QLabel { color: green; }");
+    ui->connectionLabel->setText("Online");
 }
 
+/*---------------------------------------------------------------------------------------------------------------------
+-- FUNCTION: on_exportFileButton_clicked
+--
+-- DATE: March 23, 2016
+--
+-- REVISIONS: None
+--
+-- DESIGNER: Oscar Kwan
+--
+-- PROGRAMMER: Oscar Kwan
+--
+-- INTERFACE:
+--
+--          void ()
+--
+-- RETURNS: void
+--
+-- NOTES:
+-- This function is executed when the export button is clicked. It creates a file and takes in the textbrowsers text
+-- and outputs it to a log file.
+---------------------------------------------------------------------------------------------------------------------*/
 void MainWindow::on_exportFileButton_clicked()
 {
     QString log = ui->textWindow->toPlainText();

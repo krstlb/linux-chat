@@ -795,11 +795,12 @@ QTabBar::close-button:pressed {
 
 /* TOP TABS */
 QTabBar::tab:top {
-    color: #b1b1b1;
+    color: white;
+    font: bold;
     border: 1px solid #4A4949;
     border-bottom: 1px transparent black;
-    background-color: #302F2F;
-    padding: 5px;
+    background-color: #748BD9;
+    padding: 10px;
     border-top-left-radius: 2px;
     border-top-right-radius: 2px;
 }

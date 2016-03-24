@@ -16,5 +16,6 @@
 #include <string>
 #include <QStatusBar>
 #include <QtDebug>
+#include <QThread>
 
 #endif // GLOBAL_H
