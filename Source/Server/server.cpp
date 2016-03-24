@@ -3,15 +3,18 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <stdlib.h>
+#include <string>
 #include <strings.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <map>
 
 #define SERVER_TCP_PORT 7000    // Default port
 #define BUFLEN          80      //Buffer length
 #define TRUE            1
 #define LISTENQ         5
 #define MAXLINE         4096
+std::map<int, std::string> clientList;
 
 // Function Prototypes
 static void SystemFatal(const char* );
@@ -82,6 +85,7 @@ int main (int argc, char **argv)
             if ((new_sd = accept(listen_sd, (struct sockaddr *) &client_addr, &client_len)) == -1)
                 SystemFatal("accept error");
 
+            clientList.insert(std::pair<int, std::string>(new_sd, inet_ntoa(client_addr.sin_addr)));
             printf("Client connected: %s\n", inet_ntoa(client_addr.sin_addr));
 
             for (i = 0; i < FD_SETSIZE; i++)
@@ -106,7 +110,6 @@ int main (int argc, char **argv)
             if (--nready <= 0)
                 continue;   // no more readable descriptors
          }
-
         // receive data from client
         for (i = 0; i <= maxi; i++) {
             if ((sockfd = client[i]) < 0)
@@ -117,31 +120,29 @@ int main (int argc, char **argv)
                 bytes_to_read = BUFLEN;
                 //while ((n = read(sockfd, bp, bytes_to_read)) > 0) {
                 n = read(sockfd, bp, bytes_to_read);
-                printf("Read %zuB message from client%d[%s]: %s", n, i, inet_ntoa(client_addr.sin_addr), buf);
                 if (n > 0) {
                     bp += n;
                     bytes_to_read -= n;
                 }
+                printf("Read from client%d[%s]: %s\n", i, clientList[i].c_str(), buf);
 
                 int c;
                 for (c = 0; c <= maxi; c++) {
                     // Echo to all clients except the one who sent
                     if (c != i) {
-                    write(client[c], buf, BUFLEN);
+                        write(client[c], buf, BUFLEN);
                     }
                 }
-                printf("Sending message from client%d[%s]:  %s", i, inet_ntoa(client_addr.sin_addr), buf);
+                printf("Sending message from client%d[%s]: %s\n", i, inet_ntoa(client_addr.sin_addr), buf);
 
                 // Close socket if client sent 'q'
-                if (buf[0] == 'q') {                // connection closed by client
+                if (n == 0) {                // connection closed by client
                     printf(" Remote Address:  %s closed connection\n", inet_ntoa(client_addr.sin_addr));
                     close(sockfd);
                     FD_CLR(sockfd, &allset);
                     client[i] = -1;
-                }
 
-                if (--nready <= 0)
-                    break;                  // no more readable descriptors
+                }
             }
         }
     }
