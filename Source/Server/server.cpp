@@ -8,16 +8,21 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <map>
+using namespace std;
 
 #define SERVER_TCP_PORT 7000    // Default port
 #define BUFLEN          80      //Buffer length
 #define TRUE            1
 #define LISTENQ         5
 #define MAXLINE         4096
-std::map<int, std::string> clientList;
+
+typedef map<int, map<string, string> >      ClientList;
+typedef map<string, string>                 UserInfoList;
+map<int, map<string, string> > ::iterator   it1, it2, it3;
 
 // Function Prototypes
 static void SystemFatal(const char* );
+void print_clientList(const ClientList&);
 
 int main (int argc, char **argv)
 {
@@ -28,6 +33,8 @@ int main (int argc, char **argv)
     socklen_t client_len;
     size_t n;
     fd_set rset, allset;
+    ClientList clientList;
+    UserInfoList userinfolist;
 
     switch(argc)
     {
@@ -81,12 +88,20 @@ int main (int argc, char **argv)
         // new client connection
         if (FD_ISSET(listen_sd, &rset)) {
             client_len = sizeof(client_addr);
+            string temp = "poo";
 
             if ((new_sd = accept(listen_sd, (struct sockaddr *) &client_addr, &client_len)) == -1)
                 SystemFatal("accept error");
 
-            clientList.insert(std::pair<int, std::string>(new_sd, inet_ntoa(client_addr.sin_addr)));
-            printf("Client connected: %s\n", inet_ntoa(client_addr.sin_addr));
+            printf("fd[%4d] IP[%15s] connected.\n", new_sd, inet_ntoa(client_addr.sin_addr));
+
+            // Add to list of clients
+            userinfolist.insert(pair<string, string>(temp, inet_ntoa(client_addr.sin_addr)));
+            clientList.insert(pair<int, map<string, string> >(new_sd, userinfolist));
+
+            print_clientList(clientList);
+            //printf("Client connected: %s\n", inet_ntoa(client_addr.sin_addr));
+
 
             for (i = 0; i < FD_SETSIZE; i++)
                 if (client[i] < 0) {
@@ -118,13 +133,13 @@ int main (int argc, char **argv)
             if (FD_ISSET(sockfd, &rset)) {
                 bp = buf;
                 bytes_to_read = BUFLEN;
-                //while ((n = read(sockfd, bp, bytes_to_read)) > 0) {
+
                 n = read(sockfd, bp, bytes_to_read);
                 if (n > 0) {
                     bp += n;
                     bytes_to_read -= n;
                 }
-                printf("Read from client%d[%s]: %s\n", i, clientList[i].c_str(), buf);
+                printf("fd[%4d] IP[%15s] rcv: %s\n", new_sd, inet_ntoa(client_addr.sin_addr), buf);
 
                 int c;
                 for (c = 0; c <= maxi; c++) {
@@ -133,15 +148,19 @@ int main (int argc, char **argv)
                         write(client[c], buf, BUFLEN);
                     }
                 }
-                printf("Sending message from client%d[%s]: %s\n", i, inet_ntoa(client_addr.sin_addr), buf);
+                printf("fd[%4d] IP[%15s] snd: %s\n", sockfd, inet_ntoa(client_addr.sin_addr), buf);
 
-                // Close socket if client sent 'q'
-                if (n == 0) {                // connection closed by client
-                    printf(" Remote Address:  %s closed connection\n", inet_ntoa(client_addr.sin_addr));
+                // Client disconnected
+                if (n == 0) {
+                    // Remove client from list
+                    it3 = clientList.find(sockfd);
+                    //printf("fd[%4d] IP[%15s] disconnected.\n", it->first->first, it->second->second.c_str());
+                    clientList.erase(it3);
+                    print_clientList(clientList);
+
                     close(sockfd);
                     FD_CLR(sockfd, &allset);
                     client[i] = -1;
-
                 }
             }
         }
@@ -154,4 +173,16 @@ static void SystemFatal(const char* message)
 {
     perror (message);
     exit (EXIT_FAILURE);
+}
+
+void print_clientList(const ClientList& cl) {
+    printf("\n================\n");
+    printf("Updated list of clients...\n");
+    for (ClientList::const_iterator it1 = cl.begin(); it1 != cl.end(); ++it1) {
+        //printf("fd[%4d] IP[%15s]\n", it->first->first, it->second->second.c_str());
+        for (UserInfoList::const_iterator it2 = it1->second.begin(); it2 != it1->second.end(); ++it2) {
+            printf("fd[%4d] name[%s] IP[%15s]\n", it1->first, it2->first.c_str(), it2->second.c_str());
+        }
+    }
+    printf("\n================\n");
 }
