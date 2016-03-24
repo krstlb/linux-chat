@@ -1,6 +1,5 @@
 #include "networking.h"
 #include "mainwindow.h"
-#include "dialog.h"
 
 MainWindow *win;
 

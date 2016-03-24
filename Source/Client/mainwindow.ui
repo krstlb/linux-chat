@@ -18,49 +18,19 @@
     <item row="0" column="1">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
         <string>Chat</string>
        </attribute>
-       <widget class="QLabel" name="label">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>10</y>
-          <width>131</width>
-          <height>20</height>
-         </rect>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>131</width>
-          <height>20</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>131</width>
-          <height>20</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>11</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>Users Online:</string>
-        </property>
-       </widget>
        <widget class="QListWidget" name="listWidget">
         <property name="geometry">
          <rect>
           <x>10</x>
           <y>40</y>
           <width>171</width>
-          <height>461</height>
+          <height>471</height>
          </rect>
         </property>
         <property name="minimumSize">
@@ -84,8 +54,8 @@
          <rect>
           <x>190</x>
           <y>40</y>
-          <width>651</width>
-          <height>391</height>
+          <width>661</width>
+          <height>401</height>
          </rect>
         </property>
         <property name="minimumSize">
@@ -108,9 +78,9 @@
         <property name="geometry">
          <rect>
           <x>190</x>
-          <y>470</y>
+          <y>460</y>
           <width>561</width>
-          <height>27</height>
+          <height>51</height>
          </rect>
         </property>
        </widget>
@@ -121,9 +91,9 @@
         <property name="geometry">
          <rect>
           <x>760</x>
-          <y>470</y>
-          <width>85</width>
-          <height>26</height>
+          <y>460</y>
+          <width>91</width>
+          <height>51</height>
          </rect>
         </property>
         <property name="font">
@@ -143,17 +113,43 @@
          <bool>false</bool>
         </property>
        </widget>
-       <widget class="QCheckBox" name="checkBox">
+       <widget class="QWidget" name="horizontalLayoutWidget">
         <property name="geometry">
          <rect>
-          <x>190</x>
-          <y>440</y>
-          <width>851</width>
-          <height>22</height>
+          <x>10</x>
+          <y>10</y>
+          <width>351</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Users:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Chat window:</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QPushButton" name="exportFileButton">
+        <property name="geometry">
+         <rect>
+          <x>740</x>
+          <y>10</y>
+          <width>111</width>
+          <height>26</height>
          </rect>
         </property>
         <property name="text">
-         <string>Write to File</string>
+         <string>Export to file</string>
         </property>
        </widget>
       </widget>
