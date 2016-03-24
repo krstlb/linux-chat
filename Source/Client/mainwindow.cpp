@@ -1,6 +1,5 @@
 #include <QThread>
 #include "mainwindow.h"
-#include "dialog.h"
 #include "ui_mainwindow.h"
 #include "networking.h"
 #include "receiveworker.h"
@@ -11,8 +10,7 @@ MainWindow::MainWindow(QWidget *parent) :
     sending(false)
 {
     ui->setupUi(this);
-   // connect(ui->sendDataButton, SIGNAL (clicked()),this, SLOT (OnSendClicked()));
-    connect(ui->actionConnect, SIGNAL (triggered()),this, SLOT (onConnectClicked()));
+    connect(ui->sendMessageContent, SIGNAL(returnPressed()), ui->sendDataButton, SIGNAL(clicked()));
 }
 
 MainWindow::~MainWindow()
@@ -20,29 +18,22 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::updateTextWindow(QString msgText)
+void MainWindow::updateTextWindow(QString msgText, QString userText)
 {
-    qDebug() << "Inside Update Text Window";
-
     QScrollBar *sb = ui->textWindow->verticalScrollBar();
+
     QTime time(QTime::currentTime());
 
     // time format
     QString timeFormatString = "[" + time.toString() + "]";
-    QString divFormat = "<div style = \"border: 5px solid white;color: white;\">";
 
     // inserts html code formatting
-    ui->textWindow->insertHtml(divFormat + timeFormatString + "<div style = \"background-color: rgba(0,0,0,0.5);\"></div>" +
-                               msgText + "<div></div>" + "</div>");
-
-    // clear text after you send
-    ui->sendMessageContent->clear();
+    ui->textWindow->insertHtml("<div>" + timeFormatString + "<span style = \"color: #A00691;\">" +
+                               + "  " + userText + "</span>" + "<br>" + "<span style = \"color: #D8D8D8;\">" + msgText
+                               + "</span>" + "</div>" + "<br>");
 
     // always scroll to bottom after sending
     sb->setValue(sb->maximum());
-
-    // focus user back to text field
-    ui->sendMessageContent->setFocus();
 }
 
 void MainWindow::sendFinished()
@@ -66,17 +57,19 @@ void MainWindow::on_sendDataButton_clicked()
 {
 
     QString msgText = ui->sendMessageContent->text();
+    QString usernameText = ui->usernameField->text();
 
     QScrollBar *sb = ui->textWindow->verticalScrollBar();
     QTime time(QTime::currentTime());
 
     // time format
     QString timeFormatString = "[" + time.toString() + "]";
-    QString divFormat = "<div style = \"border: 5px solid white;color: white;\">";
+    QString spanFormat = "<div>";
 
     // inserts html code formatting
-    ui->textWindow->insertHtml(divFormat + timeFormatString + "<div style = \"background-color: rgba(0,0,0,0.5);\"></div>" +
-                               msgText + "<div></div>" + "</div>");
+    ui->textWindow->insertHtml(spanFormat + timeFormatString + "<span style = \"color: #00A3BC;\">" +
+                               + "  " + usernameText + "</span>" + "<br>" + "<span style = \"color: white;\">" + msgText
+                               + "</span>" + "</div>" + "<br>");
 
     // clear text after you send
     ui->sendMessageContent->clear();
@@ -107,6 +100,8 @@ void MainWindow::on_pushButton_clicked()
 
     QString username = ui->usernameField->text();
 
+    username.append("thisisausernameguud");
+
     // convert qstring message into char * message for sending
     std::string msg = username.toStdString();
     char* msgToSend = new char [msg.size()+1];
@@ -132,7 +127,7 @@ void MainWindow::on_pushButton_clicked()
     workerThread = new QThread;
     worker       = new ReceiveWorker;
     worker->moveToThread(workerThread);
-    connect(worker, SIGNAL(updateChatWindowSignal(QString)), this, SLOT(updateTextWindow(QString)));
+    connect(worker, SIGNAL(updateChatWindowSignal(QString, QString)), this, SLOT(updateTextWindow(QString, QString)));
     connect(workerThread, SIGNAL(started()), worker, SLOT(doWork()));
     connect(worker, SIGNAL(finished()), workerThread, SLOT(quit()));
     connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));
@@ -143,4 +138,20 @@ void MainWindow::on_pushButton_clicked()
 
     connected = true;
 
+    ui->tabWidget->setCurrentIndex(0);
+}
+
+void MainWindow::on_exportFileButton_clicked()
+{
+    QString log = ui->textWindow->toPlainText();
+    QString filename="log.txt";
+    QFile file( filename );
+    if ( file.open(QIODevice::WriteOnly) )
+    {
+        QTextStream stream( &file );
+        qDebug() << "Im creating a file";
+        stream << log << endl;
+    }
+
+    file.close();
 }

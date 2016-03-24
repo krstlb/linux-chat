@@ -22,11 +22,7 @@ public:
     ~MainWindow();
 
 private slots:
-    void updateTextWindow(QString msgText);
-    void connectUser();
-
-    void OnSendClicked();
-    void onConnectClicked();
+    void updateTextWindow(QString msgText, QString userText);
 
     void sendFinished();
     void disconnectClicked();
@@ -34,6 +30,8 @@ private slots:
     void on_sendDataButton_clicked();
 
     void on_pushButton_clicked();
+
+    void on_exportFileButton_clicked();
 
 private:
     void connectSignalSlots();
