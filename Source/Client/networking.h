@@ -9,7 +9,7 @@
 #define LISTENQ	5
 #define MAXLINE 4096
 
-void initConnection(int port, char* ip);
+int initConnection(int port, char* ip);
 void endConnection();
 void sendDataToServer(const char* sbuf);
 QString receiveDataFromServer();

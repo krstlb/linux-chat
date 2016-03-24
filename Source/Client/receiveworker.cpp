@@ -46,11 +46,18 @@ void ReceiveWorker::doWork()
 
         qDebug() << "GOT" << msgText;
 
+        if (msgText.contains("closesd")) {
+            endConnection();
+        }
+
         if (msgText.contains("thisisausernameguud")) {
             qDebug() << "GOT YOUR USERNAME";
             tempUsernameText = msgText;
             tempUsernameText.remove("thisisausernameguud");
             usernameText = tempUsernameText;
+            if (usernameText == "") {
+                usernameText = "xXxQtGuRlOs1c4xXx";
+            }
 
             emit updateUserListSignal(usernameText);
         } else {

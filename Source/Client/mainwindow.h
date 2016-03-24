@@ -8,6 +8,7 @@
 #include <QKeyEvent>
 #include <QScrollBar>
 #include <QDialog>
+#include "receiveworker.h"
 
 namespace Ui {
 class MainWindow;
@@ -26,7 +27,6 @@ private slots:
     void updateUserList(QString username);
 
     void sendFinished();
-    void disconnectClicked();
 
     void on_sendDataButton_clicked();
 
@@ -34,14 +34,22 @@ private slots:
 
     void on_exportFileButton_clicked();
 
+    void on_disconnectButton_clicked();
+
+signals:
+    void disconnectClicked();
+
 private:
     void connectSignalSlots();
+    void closeEvent(QCloseEvent *event);
+    void goOffline();
 
     bool sending;
-
     bool connected;
 
     Ui::MainWindow *ui;
+    QThread             *workerThread;
+    ReceiveWorker       *worker;
 };
 
 #endif // MAINWINDOW_H

@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "networking.h"
-#include "receiveworker.h"
 
 /*---------------------------------------------------------------------------------------
 --  SOURCE FILE:    mainwindow.cpp
@@ -18,11 +17,16 @@
 --      void MainWindow::on_sendDataButton_clicked()
 --      void MainWindow::on_pushButton_clicked()
 --      void MainWindow::on_exportFileButton_clicked()
+--      void MainWindow::on_disconnectButton_clicked()
+--      void MainWindow::on_exportFileButton_clicked()
+--      void MainWindow::closeEvent(QCloseEvent *event)
+--      void MainWindow::goOffline();
 --
 --
 --  DATE:           March 23, 2016
 --
---  REVISIONS:      (Date and Description)
+--  REVISIONS:      March 23 - add disconnect functionality (Krystle)
+--                  March 23 - add connection validation (Krystle)
 --
 --  DESIGNERS:      Oscar Kwan, Krystle Bulalakaw
 --
@@ -59,6 +63,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     connect(ui->sendMessageContent, SIGNAL(returnPressed()), ui->sendDataButton, SIGNAL(clicked()));
     ui->sendMessageContent->setClearButtonEnabled(true);
+    connected = false;
 }
 
 /*---------------------------------------------------------------------------------------------------------------------
@@ -109,6 +114,10 @@ MainWindow::~MainWindow()
 ---------------------------------------------------------------------------------------------------------------------*/
 void MainWindow::updateTextWindow(QString msgText, QString userText)
 {
+    if (!worker->m_running || msgText == "") {
+        return;
+    }
+
     QScrollBar *sb = ui->textWindow->verticalScrollBar();
 
     QTime time(QTime::currentTime());
@@ -128,6 +137,11 @@ void MainWindow::updateTextWindow(QString msgText, QString userText)
 
 void MainWindow::updateUserList(QString username) {
     ui->listWidget->clear();
+
+    if (!worker->m_running) {
+        return;
+    }
+
     std::string userListNotParsed = username.toStdString();
 
     std::stringstream ss(userListNotParsed);
@@ -143,12 +157,6 @@ void MainWindow::sendFinished()
 {
     sending = false;
 }
-
-void MainWindow::disconnectClicked()
-{
-    //connected = false;
-}
-
 
 /*---------------------------------------------------------------------------------------------------------------------
 -- FUNCTION: on_sendDataButton_clicked
@@ -173,6 +181,13 @@ void MainWindow::disconnectClicked()
 ---------------------------------------------------------------------------------------------------------------------*/
 void MainWindow::on_sendDataButton_clicked()
 {
+    QMessageBox messageBox;
+
+    if (!connected) {
+        messageBox.critical(0,"Error","Cannot send, not connected.");
+        messageBox.setFixedSize(500,200);
+        return;
+    }
 
     QString msgText = ui->sendMessageContent->text();
     QString usernameText = ui->usernameField->text();
@@ -217,11 +232,11 @@ void MainWindow::on_sendDataButton_clicked()
 --
 -- DATE: March 23, 2016
 --
--- REVISIONS: None
+-- REVISIONS: March 23 - error checking (Krystle)
 --
 -- DESIGNER: Oscar Kwan
 --
--- PROGRAMMER: Oscar Kwan
+-- PROGRAMMER: Oscar Kwan, Krystle Bulalaakaw
 --
 -- INTERFACE:
 --
@@ -239,9 +254,6 @@ void MainWindow::on_pushButton_clicked()
     int port;
     std::string host;
     char* hostIP;
-
-    QThread             *workerThread;
-    ReceiveWorker       *worker;
 
     QString tempUser;
     QString username = ui->usernameField->text();
@@ -263,7 +275,9 @@ void MainWindow::on_pushButton_clicked()
 
     qDebug() << msgToSend << " " << port << " " << hostIP;
 
-    initConnection(port, hostIP);
+    if (initConnection(port, hostIP) < 0) {
+        return;
+    }
 
     // send username
     std::thread sendThread(sendDataToServer, std::ref(msgToSend));
@@ -279,11 +293,8 @@ void MainWindow::on_pushButton_clicked()
     connect(worker, SIGNAL(finished()), workerThread, SLOT(quit()));
     connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));
     connect(workerThread, SIGNAL(finished()), workerThread, SLOT(deleteLater()));
-    connect(worker, SIGNAL(finished()), this, SLOT(disconnectClicked()));
-    //connect(ui->actionDisconnect, SIGNAL(clicked()), worker, SLOT(stopWork()));
-    workerThread->start();
 
-    connected = true;
+    workerThread->start();
 
     // switch to chat tab
     ui->tabWidget->setCurrentIndex(0);
@@ -292,6 +303,8 @@ void MainWindow::on_pushButton_clicked()
     ui->listWidget->addItem(username);
     ui->connectionLabel->setStyleSheet("QLabel { color: green; }");
     ui->connectionLabel->setText("Online");
+
+    connected = true;
 }
 
 /*---------------------------------------------------------------------------------------------------------------------
@@ -328,4 +341,86 @@ void MainWindow::on_exportFileButton_clicked()
     }
 
     file.close();
+}
+
+/*---------------------------------------------------------------------------------------------------------------------
+-- FUNCTION: on_disconnectButton_clicked
+--
+-- DATE: March 23, 2016
+--
+-- REVISIONS: None
+--
+-- DESIGNER: Krystle Bulalakaw
+--
+-- PROGRAMMER: Krystle Bulalakaw
+--
+-- INTERFACE:
+--
+--          void ()
+--
+-- RETURNS: void
+--
+-- NOTES:
+-- This function is executed when the disconnect button is clicked. It stops the receive worker thread, closes the
+-- socket, clears the connected clients list, and sets status to offline.
+---------------------------------------------------------------------------------------------------------------------*/
+void MainWindow::on_disconnectButton_clicked()
+{
+    goOffline();
+}
+
+/*---------------------------------------------------------------------------------------------------------------------
+-- FUNCTION: closeEvent
+--
+-- DATE: March 23, 2016
+--
+-- REVISIONS: None
+--
+-- DESIGNER: Krystle Bulalakaw
+--
+-- PROGRAMMER: Krystle Bulalakaw
+--
+-- INTERFACE:
+--
+--          closeEvent(QCloseEvent *event)
+--
+-- RETURNS: void
+--
+-- NOTES:
+-- Handles the even for when the main window is closed. It stops the receive worker thread, closes the
+-- socket and clears the connected clients list.
+---------------------------------------------------------------------------------------------------------------------*/
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    goOffline();
+}
+
+
+/*---------------------------------------------------------------------------------------------------------------------
+-- FUNCTION: goOffline
+--
+-- DATE: March 23, 2016
+--
+-- REVISIONS: None
+--
+-- DESIGNER: Krystle Bulalakaw
+--
+-- PROGRAMMER: Krystle Bulalakaw
+--
+-- INTERFACE:
+--
+--          void ()
+--
+-- RETURNS: void
+--
+-- NOTES:
+-- Stops the receive worker thread, closes the socket, clears the connected clients list, and sets offline status.
+---------------------------------------------------------------------------------------------------------------------*/
+void MainWindow::goOffline() {
+    sendDataToServer("closesd");
+    worker->m_running = true;
+    endConnection();
+    ui->listWidget->clear();
+    ui->connectionLabel->setStyleSheet("QLabel { color: red; }");
+    ui->connectionLabel->setText("Offline");
 }

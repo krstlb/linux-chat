@@ -10,6 +10,8 @@ class ReceiveWorker : public QObject
 public:
     ReceiveWorker();
 
+    bool m_running;
+
 public slots:
     void doWork();
     void stopWork();
@@ -19,9 +21,7 @@ signals:
     void finished();
     void updateChatWindowSignal(QString msgText, QString usernameText);
     void updateUserListSignal(QString username);
-
-private:
-    bool m_running;
+    void clearUserListSignal();
 };
 
 #endif // RECEIVEWORKER_H
