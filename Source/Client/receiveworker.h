@@ -18,6 +18,7 @@ signals:
     void receiveData();
     void finished();
     void updateChatWindowSignal(QString msgText, QString usernameText);
+    void updateUserListSignal(QString username);
 
 private:
     bool m_running;

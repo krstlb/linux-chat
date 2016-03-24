@@ -126,6 +126,19 @@ void MainWindow::updateTextWindow(QString msgText, QString userText)
     sb->setValue(sb->maximum());
 }
 
+void MainWindow::updateUserList(QString username) {
+    ui->listWidget->clear();
+    std::string userListNotParsed = username.toStdString();
+
+    std::stringstream ss(userListNotParsed);
+    std::string token;
+    while(std::getline(ss, token, '<')){
+        QString tokenString = QString::fromUtf8(token.c_str());
+        qDebug() << tokenString;
+        ui->listWidget->addItem(tokenString);
+    }
+}
+
 void MainWindow::sendFinished()
 {
     sending = false;
@@ -188,6 +201,8 @@ void MainWindow::on_sendDataButton_clicked()
 
     // convert qstring message into char * message for sending
     std::string msg (msgText.toStdString());
+    msg.append("|");
+    msg.append(usernameText.toStdString());
     char* message = new char [msg.size()+1];
     strcpy(message, msg.c_str());
 
@@ -259,6 +274,7 @@ void MainWindow::on_pushButton_clicked()
     worker       = new ReceiveWorker;
     worker->moveToThread(workerThread);
     connect(worker, SIGNAL(updateChatWindowSignal(QString, QString)), this, SLOT(updateTextWindow(QString, QString)));
+    connect(worker, SIGNAL(updateUserListSignal(QString)), this, SLOT(updateUserList(QString)));
     connect(workerThread, SIGNAL(started()), worker, SLOT(doWork()));
     connect(worker, SIGNAL(finished()), workerThread, SLOT(quit()));
     connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));

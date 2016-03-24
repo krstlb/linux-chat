@@ -12,7 +12,9 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <thread>
+#include <vector>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <QStatusBar>
 #include <QtDebug>

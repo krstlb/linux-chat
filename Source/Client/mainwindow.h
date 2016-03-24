@@ -23,6 +23,7 @@ public:
 
 private slots:
     void updateTextWindow(QString msgText, QString userText);
+    void updateUserList(QString username);
 
     void sendFinished();
     void disconnectClicked();

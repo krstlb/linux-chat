@@ -11,7 +11,7 @@
 using namespace std;
 
 #define SERVER_TCP_PORT 7000    // Default port
-#define BUFLEN          80      //Buffer length
+#define BUFLEN          6969      //Buffer length
 #define TRUE            1
 #define LISTENQ         5
 #define MAXLINE         4096
@@ -102,12 +102,6 @@ int main (int argc, char **argv)
                     break;
                 }
 
-            // send list of clients to all clients
-            int c;
-            for (c = 0; c <= maxi; c++) {
-                // Echo to all clients except the one who sent
-                send_clientlist(userinfolist, clientlist, new_sd);
-            }
 
             if (i == FD_SETSIZE) {
                 SystemFatal ("Too many clients");
@@ -226,7 +220,7 @@ string create_s_clientlist() {
 
     for (map<int, string>::iterator it = usernamelist.begin(); it != usernamelist.end(); ++it, ++i)
     {
-        result += it->second + " " + usernametag;
+        result += it->second + "<" + usernametag;
     }
 
     return result;

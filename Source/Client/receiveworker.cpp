@@ -38,7 +38,9 @@ void ReceiveWorker::doWork()
     QString msgText;
     QString tempUsernameText;
     QString usernameText;
-    qDebug() << "inside ReceiveDoWork";
+    QString tokenString;
+    std::string token;
+
     while (m_running) {
         msgText = receiveDataFromServer();
 
@@ -49,9 +51,18 @@ void ReceiveWorker::doWork()
             tempUsernameText = msgText;
             tempUsernameText.remove("thisisausernameguud");
             usernameText = tempUsernameText;
-        }
 
-        emit updateChatWindowSignal(msgText, usernameText);
+            emit updateUserListSignal(usernameText);
+        } else {
+            std::stringstream ss(msgText.toStdString());
+            while(std::getline(ss, token, '|')) {
+                tokenString = QString::fromUtf8(token.c_str());
+                qDebug() << "TESTING:" << tokenString;
+            }
+
+            msgText.remove(QRegExp("([|][^|]*$)"));
+            emit updateChatWindowSignal(msgText, tokenString);
+        }
     }
     emit finished();
 }
