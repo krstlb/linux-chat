@@ -1,12 +1,63 @@
 #include "networking.h"
 #include "mainwindow.h"
 
+/*---------------------------------------------------------------------------------------
+--  SOURCE FILE:    networking.cpp
+--
+--  PROGRAM:        Linux Chat application
+--
+--  FUNCTIONS:
+--
+--      void initConnection(int port, char* ip)
+--      void sendDataToServer(const char* msg)
+--      QString receiveDataFromServer()
+--      void endConnection()
+--
+--
+--  DATE:           March 23, 2016
+--
+--  REVISIONS:      (Date and Description)
+--
+--  DESIGNERS:      Oscar Kwan, Krystle Bulalakaw
+--
+--  PROGRAMMER:     Oscar Kwan, Krystle Bulalakaw
+--
+--  NOTES:
+--  This class contains the logic behind client side networking. It includes functions
+--  that initiates a TCP connection and do sending and receiving.
+---------------------------------------------------------------------------------------*/
+
 MainWindow *win;
 
 int sd;
 int n, bytes_to_read;
 char *host, *bp, rbuf[BUFLEN], sbuf[BUFLEN];
 
+/*---------------------------------------------------------------------------------------------------------------------
+-- FUNCTION: initConnection
+--
+-- DATE: March 23, 2016
+--
+-- REVISIONS: None
+--
+-- DESIGNER: Oscar Kwan
+--
+-- PROGRAMMER: Oscar Kwan
+--
+-- INTERFACE:
+--
+--          void (int port, char* ip)
+--              int port
+--                  - port form user input
+--              char* ip
+--                  - ip address from user input
+--
+-- RETURNS: void
+--
+-- NOTES:
+-- This function initializes the connection with the client and the server by creating a tcp socket and
+-- calling connect to the server.
+---------------------------------------------------------------------------------------------------------------------*/
 void initConnection(int port, char* ip) {
     struct sockaddr_in server;
     struct hostent  *hp;
@@ -40,12 +91,51 @@ void initConnection(int port, char* ip) {
 
 }
 
+/*---------------------------------------------------------------------------------------------------------------------
+-- FUNCTION: sendDataToServer
+--
+-- DATE: March 23, 2016
+--
+-- REVISIONS: None
+--
+-- DESIGNER: Oscar Kwan
+--
+-- PROGRAMMER: Oscar Kwan
+--
+-- INTERFACE:
+--
+--          void (const char* msg)
+--              const char* msg
+--                  - message to be sent to the server
+--
+-- RETURNS: void
+--
+-- NOTES:
+-- This function is a wrapper function for the network send call.
+---------------------------------------------------------------------------------------------------------------------*/
 void sendDataToServer(const char* msg) {
     qDebug() << msg;
 
     send (sd, msg, BUFLEN, 0);
 }
 
+/*---------------------------------------------------------------------------------------------------------------------
+-- FUNCTION: receiveDataFromServer
+--
+-- DATE: March 23, 2016
+--
+-- REVISIONS: None
+--
+-- DESIGNER: Oscar Kwan
+--
+-- PROGRAMMER: Oscar Kwan
+--
+-- RETURNS: QString
+--
+-- NOTES:
+-- This function is the main function that deals with receiving strings from the server. It checks if it is either
+-- a username or an actual message. This function is called inside a QThread that emits signals to the gui for updating.
+---------------------------------------------------------------------------------------------------------------------*/
 QString receiveDataFromServer() {
     qDebug("Receiving data from server");
     while (1) {

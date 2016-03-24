@@ -6,7 +6,7 @@
 /*---------------------------------------------------------------------------------------
 --  SOURCE FILE:    mainwindow.cpp
 --
---  PROGRAM:        Linux Game
+--  PROGRAM:        Linux Chat application
 --
 --  FUNCTIONS:
 --
@@ -115,10 +115,11 @@ void MainWindow::updateTextWindow(QString msgText, QString userText)
 
     // time format
     QString timeFormatString = "[" + time.toString() + "]";
+    QString div = "<div>";
 
     // inserts html code formatting
-    ui->textWindow->insertHtml("<div>" + timeFormatString + "<span style = \"color: #A00691;\">" +
-                               + "  " + userText + "</span>" + "<br>" + "<span style = \"color: #D8D8D8;\">" + msgText
+    ui->textWindow->insertHtml(div + "<span style = \"color: #A00691;\">" + userText + "</span>" + " - " +
+                               timeFormatString + "<br>" + "<span style = \"color: #D8D8D8;\">" + msgText
                                + "</span>" + "</div>" + "<br>");
 
     // always scroll to bottom after sending
@@ -168,12 +169,13 @@ void MainWindow::on_sendDataButton_clicked()
 
     // time format
     QString timeFormatString = "[" + time.toString() + "]";
-    QString spanFormat = "<div>";
+    QString div = "<div>";
 
     // inserts html code formatting
-    ui->textWindow->insertHtml(spanFormat + timeFormatString + "<span style = \"color: #00A3BC;\">" +
-                               + "  " + usernameText + "</span>" + "<br>" + "<span style = \"color: white;\">" + msgText
+    ui->textWindow->insertHtml(div + "<span style = \"color: #00A3BC;\">"
+                               + usernameText + "</span>" + " - " + timeFormatString + "<br>" + "<span style = \"color: #D8D8D8;\">" + msgText
                                + "</span>" + "</div>" + "<br>");
+
 
     // clear text after you send
     ui->sendMessageContent->clear();

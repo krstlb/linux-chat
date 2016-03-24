@@ -109,9 +109,7 @@ int main (int argc, char **argv)
             int c;
             for (c = 0; c <= maxi; c++) {
                 // Echo to all clients except the one who sent
-                if (c != i) {
-                    send_clientlist(userinfolist, clientlist, new_sd);
-                }
+                send_clientlist(userinfolist, clientlist, new_sd);
             }
 
             if (i == FD_SETSIZE) {
